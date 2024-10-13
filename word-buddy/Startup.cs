@@ -1,4 +1,7 @@
-﻿namespace word_buddy
+﻿using Microsoft.EntityFrameworkCore;
+using Persistence;
+
+namespace word_buddy
 {
     public class Startup
     {
@@ -10,6 +13,10 @@
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllersWithViews();
+
+            services.AddDbContext<ApplicationDbContext>(cfg => {
+                cfg.UseNpgsql(configuration["ConnectionStrings:DatabaseConnection"]);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
