@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
@@ -8,7 +9,7 @@ namespace Persistence
             Database.EnsureCreated();
         }
 
-        //DbSet
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
