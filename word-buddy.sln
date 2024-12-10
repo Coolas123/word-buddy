@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "word-buddy", "word-buddy\word-buddy.csproj", "{DF4652E5-1C3F-4DE8-8F50-F1BA5E84ED35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "word-buddy", "word-buddy\word-buddy.csproj", "{DF4652E5-1C3F-4DE8-8F50-F1BA5E84ED35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{F525B261-3398-4A91-898A-8DBFB628FDCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{F525B261-3398-4A91-898A-8DBFB628FDCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{8AAC8ED7-A7F0-48D2-B7E5-F949817A1716}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "Presentation\Presentation.csproj", "{8AAC8ED7-A7F0-48D2-B7E5-F949817A1716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{207C1970-6A08-4F63-B011-8836351A4CD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistence\Persistence.csproj", "{207C1970-6A08-4F63-B011-8836351A4CD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{8CADB2A7-83B5-4A9A-8A31-F2F591C1F4FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{8CADB2A7-83B5-4A9A-8A31-F2F591C1F4FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7DD984E1-BB41-4914-9743-EBDCF3C2081D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{7DD984E1-BB41-4914-9743-EBDCF3C2081D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

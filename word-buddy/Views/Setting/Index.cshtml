@@ -1,0 +1,60 @@
+﻿@using Domain.Entities
+@using Presentation.ViewModels
+@model SettingViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col d-flex flex-column align-items-end">
+            <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="btn btn-outline-secondary active m-1" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="true">Общие</button>
+            </div>
+        </div >
+
+        <div class="col">
+            @if (TempData["SettingsChanged"]!=null) {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    @TempData["SettingsChanged"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <form asp-action="ChangeSettings" asp-controller="Setting" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <input hidden asp-for="ChangeUserSettingsCommand.UserId" value="@User.FindFirst("Id").Value"/>
+                        <div>
+                            <label asp-for="ChangeUserSettingsCommand.Country"></label>
+                            <select asp-for="ChangeUserSettingsCommand.Country" asp-items="Html.GetEnumSelectList<Domain.Enums.Country>()"></select>
+                        </div>
+                        <div>
+                            <label asp-for="ChangeUserSettingsCommand.UserName"></label>
+                            <input class="form-control" asp-for="ChangeUserSettingsCommand.UserName" value="@Model.SettingUserViewModel.UserName" />
+                        </div>
+                        <div>
+                            <label asp-for="ChangeUserSettingsCommand.Email"></label>
+                            <input class="form-control" asp-for="ChangeUserSettingsCommand.Email" value="@Model.SettingUserViewModel.Email" />
+                        </div>
+                        <div>
+                            <label asp-for="ChangeUserSettingsCommand.Password"></label>
+                            <input class="form-control" asp-for="ChangeUserSettingsCommand.Password" placeholder="Введите новый пароль" />
+                        </div>
+                        <div>
+                            <label asp-for="ChangeUserSettingsCommand.ConfirmPassword"></label>
+                            <input class="form-control" asp-for="ChangeUserSettingsCommand.ConfirmPassword" placeholder="Повторите пароль" />
+                        </div>
+                        <button class="btn btn-danger" type="submit">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    var id = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject((int)@Model.SettingUserViewModel.Country))'
+    document.querySelector("#NewSettingViewModel_Country").value = id
+</script>

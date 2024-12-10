@@ -12,6 +12,10 @@ namespace Persistence.Configurations
                 .HasKey(x=>x.Id);
 
             builder
+                .Property(x => x.Id)
+                .HasColumnName("id");
+
+            builder
                 .Property(x=>x.UserName)
                 .HasColumnName("user_name")
                 .HasMaxLength(64);
@@ -32,6 +36,11 @@ namespace Persistence.Configurations
             builder
                 .Property(x => x.HashPassword)
                 .HasColumnName("hash_password");
+
+            builder.
+                HasMany(x => x.Dictionaries)
+                .WithOne()
+                .HasForeignKey(x => x.UserId);
         }
     }
 }

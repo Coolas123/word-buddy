@@ -1,0 +1,25 @@
+﻿@using Application.Users.Queries.LoginUser
+@model LoginUserQuery
+
+<section class="container text-left">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <header class="text-center">
+                <h1>Авторизация</h1>
+            </header>
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
+                <div>
+                    <label asp-for="Email"></label>
+                    <input type="email" class="form-control" asp-for="Email" placeholder="Введите логин" />
+                </div>
+                <div>
+                    <label asp-for="Password"></label>
+                    <input type="password" class="form-control" asp-for="Password" placeholder="Введите пароль" />
+                </div>
+                <button type="submit" class="btn btn-success mt-2">Войти</button>
+            </form>
+        </div>
+    </div>
+</section>

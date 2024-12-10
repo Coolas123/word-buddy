@@ -1,0 +1,95 @@
+﻿@using Application.Dictionaries.Commands.CreateDictionary
+@using Domain.Enums
+@model CreateDictionaryCommand
+
+<section>
+    <div class="container text-left">
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <header>Создание словаря</header>
+                <form method="post" asp-action="createDictionary">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div>
+                        <label asp-for="Title"></label>
+                        <input class="form-control" type="text" asp-for="Title" placeholder="Введите название словаря"/>
+                    </div>
+                    <div>
+                        <label asp-for="Description"></label>
+                        <textarea style="resize: none;" rows="4" class="form-control" asp-for="Description" placeholder="Введите описание словаря"></textarea>
+                    </div>
+                    <div>
+                        <label asp-for="WordLanguage"></label>
+                        <select class="form-select" asp-for="WordLanguage" asp-items="Html.GetEnumSelectList<Language>()">
+                            <option value="" disabled selected>выберите язык</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label asp-for="TranslationLanguage"></label>
+                        <select class="form-select" asp-for="TranslationLanguage" asp-items="Html.GetEnumSelectList<Language>()">
+                            <option value="" disabled selected>выберите язык</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <div id="DictionaryRows">
+                        <div class="form-inline">
+                            <span>Язык слова:</span>
+                            <span class="float-end">Язык перевода:</span>
+                        </div>
+                        <div class="form-inline">
+                            <span id="wordLanguageName"></span>
+                            <span id="translationLanguageName" class="float-end" asp-for="TranslationLanguage"></span>
+                        </div>
+                        <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
+                            <input class="form-control" type="text" name="DictionaryRowViewModels[0].Word" />
+                            <input class="form-control" type="text" name="DictionaryRowViewModels[0].Translation" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script >
+    let i = 0;
+    document.querySelector("input[name='DictionaryRowViewModels[0].Word']").addEventListener("change", addDictionaryRow)
+    function addDictionaryRow(){
+        let lastRow = document.querySelector("input[name='DictionaryRowViewModels[" + i + "].Word']")
+        
+        if (!lastRow.value) return
+
+        i++
+        let input1 = document.createElement("input")
+        input1.className = "form-control"
+        input1.type = "text"
+        input1.name = "DictionaryRowViewModels[" + i + "].Word"
+        let input2 = document.createElement("input")
+        input2.className = "form-control"
+        input2.type = "text"
+        input2.name = "DictionaryRowViewModels[" + i + "].Translation"
+        let div = document.createElement("div")
+        div.className = "input-group  bg-opacity-10 border border-secondary-subtle rounded"
+        div.append(input1)
+        div.append(input2)
+
+        document.querySelector("#DictionaryRows").append(div)
+        
+        document.querySelector("input[name='DictionaryRowViewModels[" + i + "].Word']").addEventListener("change", addDictionaryRow)
+    }
+    document.querySelector("#WordLanguage").addEventListener("change",(e)=>{
+        fillLanguages(e, "#wordLanguageName")
+    })
+    document.querySelector("#TranslationLanguage").addEventListener("change", (e)=> {
+        fillLanguages(e,"#translationLanguageName")
+    })
+    //document.querySelector("#WordLanguage").addEventListener("change",(e)=>{
+        //let languageValue = document.querySelector("#WordLanguage").value
+        //let selected = e.target;
+        //document.querySelector("#wordLanguageName").innerText = selected.options[selected.selectedIndex].text;
+    //})
+
+    function fillLanguages(e,spanId){
+        let selected = e.target;
+        document.querySelector(spanId).innerText = selected.options[selected.selectedIndex].text;
+    }
+</script>

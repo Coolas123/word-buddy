@@ -1,0 +1,42 @@
+﻿@using Application.Users.Commands.RegisterUser
+@using Domain.Enums
+@model RegisterUserCommand
+
+<section class="container text-left">
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+        </div>
+        <div class="col-lg-4">
+            <header class="text-center">
+                <h1>Регистрация</h1>
+            </header>
+            <form asp-action="registration" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" name="returnUrl" value="ReturnUrl" />
+                <div>
+                    <label asp-for="UserName"></label>
+                    <input class="form-control" asp-for="UserName" placeholder="Введите прозвище" />
+                </div>
+                <div>
+                    <label asp-for="Country"></label>
+                    <select class="form-select" asp-for="Country" asp-items="Html.GetEnumSelectList<Country>()"></select>
+                </div>
+                <div>
+                    <label asp-for="Password"></label>
+                    <input class="form-control" asp-for="Password" placeholder="Введите пароль" />
+                </div>
+                <div>
+                    <label asp-for="ConfirmPassword"></label>
+                    <input class="form-control" asp-for="ConfirmPassword" placeholder="Повторите пароль" />
+                </div>
+                <div>
+                    <label asp-for="Email"></label>
+                    <input class="form-control" asp-for="Email" placeholder="Введите почту" />
+                </div>
+                <button type="submit" class="btn btn-success mt-2">Зарегистрироваться</button>
+            </form>
+        </div>
+        <div class="col-lg-4">
+        </div>
+    </div>
+</section>
