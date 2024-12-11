@@ -15,6 +15,7 @@ namespace Persistence.Configurations
 
             builder
                 .Property(x=>x.Text)
+                .HasMaxLength(128)
                 .HasColumnName("text");
 
             builder

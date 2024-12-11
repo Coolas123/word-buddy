@@ -34,9 +34,8 @@ namespace Persistence.Configurations
                 .HasColumnName("translation_language");
 
             builder.
-                Property(x=>x.CreatedAt)
-                .HasColumnName("created_at")
-                .HasColumnType("Date");
+                Property(x => x.CreatedAt)
+                .HasColumnName("created_at");
 
             builder.
                 Property(x => x.UserId)
