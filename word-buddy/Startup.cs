@@ -65,6 +65,9 @@ namespace word_buddy
             services.AddScoped<IUserRepository,UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailUniqueCheck, EmailUniqueCheck>();
+            services.AddScoped<IDictionaryRepository, DictionaryRepository>();
+            services.AddScoped<IWordRepository, WordRepository>();
+            services.AddScoped<ITranslationRepository, TranslationRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

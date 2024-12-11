@@ -5,6 +5,12 @@
     <div class="container text-center">
         <div class="row justify-content-center">
             <div class="col-4">
+                @if (TempData.Count != 0 && TempData["DictionaryCreated"] != null) {
+                    <div class="alert alert-success alert-dismissible text-center" role="alert">
+                        @TempData["DictionaryCreated"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
                 <a class="btn btn-primary" asp-action="createDictionary">Создать новый словарь</a>
             </div>
         </div>

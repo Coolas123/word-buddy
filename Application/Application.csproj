@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Dictionaries\Queries\" />
+    <Folder Include="Words\Queries\" />
   </ItemGroup>
 
 </Project>
