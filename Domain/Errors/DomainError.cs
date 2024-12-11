@@ -12,5 +12,33 @@ namespace Domain.Errors
                 "The email is arleady used"
             );
         }
+
+        public static class DictionaryError
+        {
+
+            public static readonly Error WordIsEmpty = new Error
+            (
+                "DictionaryRow.Create",
+                "Пустое значение"
+            );
+
+            public static readonly Error TranslationIsEmpty = new Error
+            (
+                "DictionaryRow.Create",
+                "Пустое значение"
+            );
+
+            public static readonly Error WordIsLong = new Error
+            (
+                "DictionaryRow.Create",
+                "Слишком длинное значение"
+            );
+
+            public static readonly Error TranslationIsLong = new Error
+           (
+               "DictionaryRow.Create",
+               "Слишком длинное значение"
+           );
+        }
     }
 }
