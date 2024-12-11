@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dictionaries.Commands.CreateDictionary
 {
-    public sealed class CreateDictionaryCommand : ICommand
+    public sealed class CreateDictionaryCommand : ICommand<Guid>
     {
         [Display(Name ="Заголовок")]
         public string? Title { get; set; }
@@ -15,8 +15,8 @@ namespace Application.Dictionaries.Commands.CreateDictionary
         [Display(Name = "Язык перевода")]
         public Language? TranslationLanguage { get; set; }
 
-        public DateTime? CreatedAt { get; init; }
+        public DateTime? CreatedAt { get; set; }
 
-
+        public Guid UserId { get; set; }
     }
 }
