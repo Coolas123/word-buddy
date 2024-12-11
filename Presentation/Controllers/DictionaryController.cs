@@ -1,7 +1,9 @@
-﻿using Application.Dictionaries.Commands.CreateDictionary;
+﻿using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Controllers.Extensions;
+using Presentation.ViewModels;
 
 namespace Presentation.Controllers
 {
@@ -19,19 +21,35 @@ namespace Presentation.Controllers
         [Authorize(Roles = "WordLearner")]
         [HttpGet]
         public IActionResult CreateDictionary() {
-            return View();
+            return View(new CreateDictionaryViewModel());
         }
 
         [Authorize(Roles = "WordLearner")]
         [HttpPost]
-        public async Task<IActionResult> CreateDictionary(CreateDictionaryCommand command) {
-            var CreateDictionaryResult = await Sender.Send(command);
-            if (CreateDictionaryResult.IsSuccess) {
-                TempData["DictionaryCreated"] = "Словарь создан";
+        public async Task<IActionResult> CreateDictionary(CreateDictionaryViewModel model) {
+            model.CreateDictionaryCommand.CreatedAt = DateTime.Now.ToUniversalTime();
+            
+            var CreateDictionaryResult = await Sender.Send(model.CreateDictionaryCommand);
+            
+            if (!CreateDictionaryResult.IsSuccess) {
+                var validationError = (IValidationResult)CreateDictionaryResult;
+                ModelState.AddModelError(validationError.Errors);
+                return View(model);
             }
             else {
-                TempData["DictionaryCreated"] = "Не удалось создать словарь";
+                TempData["DictionaryCreated"] = "Словарь создан";
             }
+
+            model.CreateDictionaryRowCommand.CreateWordCommand.DictionaryId = CreateDictionaryResult.Value();
+
+            var createDictionaryRowResult = await Sender.Send(model.CreateDictionaryRowCommand);
+
+            if (createDictionaryRowResult.IsFailure) {
+                var validationError = (IValidationResult)createDictionaryRowResult;
+                ModelState.AddModelError(validationError.Errors);
+                return View(model);
+            }
+
             return Redirect("Index");
         }
     }

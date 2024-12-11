@@ -69,10 +69,10 @@ namespace Presentation.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> LogOut() {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        public IActionResult LogOut() {
+            HttpContext.Response.Cookies.Delete("token");
             return RedirectToAction("Index", "Home");
         }
     }
