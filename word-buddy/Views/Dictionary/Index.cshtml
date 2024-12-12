@@ -1,17 +1,44 @@
-﻿@using Application.Dictionaries.Commands.CreateDictionary
-@model CreateDictionaryCommand
+﻿@using Domain.Entities
+@using Presentation.ViewModels
+@model DictionariesViewModel
 
 <section>
-    <div class="container text-center">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-4">
+            <div class="col-6">
+                <div class="text-center pb-2">
+                    <header><h2>Список словарей</h2></header>
+                    <a class="btn btn-success" asp-action="createDictionary">Создать новый словарь</a>
+                </div>
                 @if (TempData.Count != 0 && TempData["DictionaryCreated"] != null) {
                     <div class="alert alert-success alert-dismissible text-center" role="alert">
                         @TempData["DictionaryCreated"]
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 }
-                <a class="btn btn-primary" asp-action="createDictionary">Создать новый словарь</a>
+                <div class="row row-cols-2">
+                    @if(Model.Dictionaries != null){
+                        @foreach (var d in Model.Dictionaries) {
+                            <div class="col">
+                                <a  asp-action="getDictionary" asp-route-dictionaryId="@d.Id" style="text-decoration: none;">
+                                <article class="card text-bg-light mb-3">
+                                    <header class="card-header text-center">@d.Title.Substring(0, Math.Min(d.Title.Length, 50))</header>
+                                    <div class="card-body text-left">
+                                        <p class="card-text">@d.Description.Substring(0, Math.Min(d.Description.Length, 50))</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <small class="text-body-secondary">Просмотрено:@d.LastViewedAt</small>
+                                    </div>
+                                </article>
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+                <div page-model="@Model.PagingInfo" page-action="Index" type-page="currentPage"
+                     page-classes-enabled="true" page-class="btn" page-class-normal="btn-outline-dark"
+                     page-class-selected="btn-primary" class="btn-group pull-right m-1">
+                </div>
             </div>
         </div>
     </div>
