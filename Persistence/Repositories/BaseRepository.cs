@@ -27,5 +27,9 @@ namespace Persistence.Repositories
         public void Update(TEntity entity) {
             dbSet.Update(entity);
         }
+
+        public void UpdateRange(IEnumerable<TEntity> entities) {
+            dbSet.UpdateRange(entities);
+        }
     }
 }
