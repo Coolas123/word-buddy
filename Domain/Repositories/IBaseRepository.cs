@@ -9,5 +9,7 @@ namespace Domain.Repositories
         Task<TEntity> GetByIdAsync(Guid id);
 
         void Update(TEntity entity);
+
+        void UpdateRange(IEnumerable<TEntity> entity);
     }
 }

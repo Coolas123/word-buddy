@@ -10,7 +10,7 @@ namespace Domain.Entities
         public string Description { get; private set; }
         public Language WordLanguage {  get; private set; }
         public Language TranslationLanguage {  get; private set; }
-        public DateTime CreatedAt { get; init; }
+        public DateTime LastViewedAt { get; init; }
         private List<Word> _words = new();
         public IReadOnlyCollection<Word> Words => _words;
 
@@ -21,14 +21,14 @@ namespace Domain.Entities
             string description,
             Language wordLanguage,
             Language translationLanguage,
-            DateTime createdAt) : base(id)
+            DateTime lastViewedAt) : base(id)
         {
             UserId = userId;
             Title = title;
             Description = description;
             WordLanguage = wordLanguage;
             TranslationLanguage = translationLanguage;
-            CreatedAt = createdAt;
+            LastViewedAt = lastViewedAt;
         }
     }
 }

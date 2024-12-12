@@ -24,5 +24,14 @@ namespace Domain.Errors
                 "user with same id not found"
             );
         }
+
+        public static class Dictionary
+        {
+            public static readonly Error DictionariesWasNotFound = new Error
+           (
+               "GetDictionaries.Handle",
+               "Не нашлось словарей"
+           );
+        }
     }
 }
