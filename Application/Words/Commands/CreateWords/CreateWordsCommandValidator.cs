@@ -2,10 +2,10 @@
 
 namespace Application.Words.Commands.CreateWord
 {
-    public sealed class CreateWordCommandValidator : AbstractValidator<CreateWordCommand>
+    public sealed class CreateWordsCommandValidator : AbstractValidator<CreateWordsCommand>
     {
-        public CreateWordCommandValidator() {
-            RuleForEach(x => x.CreateWords)
+        public CreateWordsCommandValidator() {
+            RuleForEach(x => x.Words)
                 .Cascade(CascadeMode.Stop)
                 .ChildRules(w => {
                     w.RuleFor(x => x.Text)

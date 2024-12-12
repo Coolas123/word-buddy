@@ -5,17 +5,17 @@ using Domain.Shared;
 
 namespace Application.Translations.Commands
 {
-    public sealed class CreateTranslationCommandHandler : ICommandHandler<CreateTranslationCommand>
+    public sealed class CreateTranslationsCommandHandler : ICommandHandler<CreateTranslationsCommand>
     {
         private readonly ITranslationRepository translationRepository;
         private readonly IUnitOfWork unitOfWork;
 
-        public CreateTranslationCommandHandler(ITranslationRepository translationRepository,
+        public CreateTranslationsCommandHandler(ITranslationRepository translationRepository,
             IUnitOfWork unitOfWork) {
             this.translationRepository = translationRepository;
             this.unitOfWork = unitOfWork;
         }
-        public async Task<Result> Handle(CreateTranslationCommand request, CancellationToken cancellationToken) {
+        public async Task<Result> Handle(CreateTranslationsCommand request, CancellationToken cancellationToken) {
             var wordsForSave = new List<Translation>(request.CreateTranslations.Count);
             for (int i = 0; i < request.CreateTranslations.Count; i++) {
                 wordsForSave.Add(new Translation(

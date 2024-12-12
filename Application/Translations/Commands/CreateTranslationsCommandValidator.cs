@@ -2,9 +2,9 @@
 
 namespace Application.Translations.Commands
 {
-    public sealed class CreateTranslationCommandValidator : AbstractValidator<CreateTranslationCommand>
+    public sealed class CreateTranslationsCommandValidator : AbstractValidator<CreateTranslationsCommand>
     {
-        public CreateTranslationCommandValidator() {
+        public CreateTranslationsCommandValidator() {
             RuleForEach(x => x.CreateTranslations)
                 .Cascade(CascadeMode.Stop)
                 .ChildRules(w => {

@@ -6,21 +6,21 @@ using Domain.Shared;
 
 namespace Application.Words.Commands.CreateWord
 {
-    internal sealed class CreateWordCommandHandler : ICommandHandler<CreateWordCommand, List<Guid>>
+    internal sealed class CreateWordsCommandHandler : ICommandHandler<CreateWordsCommand, List<Guid>>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IWordRepository wordRepository;
 
-        public CreateWordCommandHandler(IUnitOfWork unitOfWork, IWordRepository wordRepository) {
+        public CreateWordsCommandHandler(IUnitOfWork unitOfWork, IWordRepository wordRepository) {
             this.unitOfWork = unitOfWork;
             this.wordRepository = wordRepository;
         }
-        public async Task<Result<List<Guid>>> Handle(CreateWordCommand request, CancellationToken cancellationToken) {
-            var wordsForSave = new List<Word>(request.CreateWords.Count);
+        public async Task<Result<List<Guid>>> Handle(CreateWordsCommand request, CancellationToken cancellationToken) {
+            var wordsForSave = new List<Word>(request.Words.Count);
 
-            var GuidList = new List<Guid>(request.CreateWords.Count);   
+            var GuidList = new List<Guid>(request.Words.Count);   
 
-            for(int i=0; i<request.CreateWords.Count; i++) {
+            for(int i=0; i<request.Words.Count; i++) {
                 var newGuid = Guid.NewGuid();
 
                 GuidList.Add(newGuid);
@@ -28,9 +28,11 @@ namespace Application.Words.Commands.CreateWord
                 wordsForSave.Add(new Word(
                 newGuid,
                 (Guid)request.DictionaryId,
-                request.CreateWords[i].Text,
+                request.Words[i].Text,
                 LearnStatus.NotStudied,
-                DateTime.Now.ToUniversalTime()));
+                DateTime.Now.ToUniversalTime(),
+                DateTime.Now.ToUniversalTime(),
+                new Translation(newGuid, request.Words[i].Translation.Text)));
             }
 
             wordRepository.CreateRange(wordsForSave);
