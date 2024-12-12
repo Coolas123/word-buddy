@@ -1,18 +1,18 @@
-﻿@using Domain.Enums
-@using Presentation.ViewModels
-@model CreateDictionaryViewModel
+﻿@using Application.Dictionaries.Commands.CreateDictionaryRow
+@using Domain.Enums
+@model CreateDictionaryAndRowsCommand
 
 <section>
     <div class="container text-left">
         <div class="row justify-content-center">
             <div class="col-4 border bg-opacity-10 rounded pb-2">
-                <header><h1>Создание словаря</h1></header>
+                <header class="text-center"><h2>Создание словаря</h2></header>
                 <form id="CreateDictionaryForm" method="post" asp-action="createDictionary">
                     <button type="submit" class="btn btn-success">Создать</button>
                     <input asp-for="CreateDictionaryCommand.UserId" value="@Guid.Parse(@User.FindFirst("Id").Value)" hidden/>
                     <div>
-                        <label asp-for="CreateDictionaryCommand.Title"></label>
-                        <input class="form-control" type="text" asp-for="CreateDictionaryCommand.Title" placeholder="Введите название словаря" />
+                        <header asp-for="CreateDictionaryCommand.Title"></header>
+                        <input class="form-control text-center" type="text" asp-for="CreateDictionaryCommand.Title" placeholder="Введите название словаря" />
                         <span asp-validation-for="CreateDictionaryCommand.Title" class="text-danger"></span>
                     </div>
                     <div>
@@ -41,21 +41,13 @@
                     <hr />
                     <div id="DictionaryRows">
                         <div class="form-inline">
-                            <span asp-validation-for="CreateDictionaryRowCommand.CreateWordCommand.CreateWords[0].Text" class="text-danger"></span>
-                            <span asp-validation-for="CreateDictionaryRowCommand.CreateTranslationCommand.CreateTranslations[0].Text" class="text-danger float-end"></span>
+                            <span asp-validation-for="CreateWordsCommand.Words[0].Text" class="text-danger"></span>
+                            <span asp-validation-for="CreateWordsCommand.Words[0].Translation.Text" class="text-danger float-end"></span>
                         </div>
-                        @for(int i = 0; i < Model.CreateDictionaryRowCommand.CreateWordCommand.CreateWords.Count; i++) {
-                            <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
-                                <input class="form-control" type="text" asp-for="CreateDictionaryRowCommand.CreateWordCommand.CreateWords[i].Text" />
-                                <input class="form-control" type="text" asp-for="CreateDictionaryRowCommand.CreateTranslationCommand.CreateTranslations[i].Text" />
-                            </div>
-                        }
-                        @if (Model.CreateDictionaryRowCommand.CreateWordCommand.CreateWords.Count == 0) {
-                            <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
-                                <input class="form-control" type="text" name="CreateDictionaryRowCommand.CreateWordCommand.CreateWords[0].Text" />
-                                <input class="form-control" type="text" name="CreateDictionaryRowCommand.CreateTranslationCommand.CreateTranslations[0].Text" />
-                            </div>
-                        }
+                        <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
+                            <input class="form-control" type="text" name="CreateWordsCommand.Words[0].Text" />
+                            <input class="form-control" type="text" name="CreateWordsCommand.Words[0].Translation.Text" />
+                        </div>
                     </div>
                 </form>
             </div>
@@ -65,9 +57,9 @@
 
 <script>
     let i = 0;
-    document.querySelector("input[name='CreateDictionaryRowCommand.CreateWordCommand.CreateWords[0].Text']").addEventListener("change", addDictionaryRow)
+    document.querySelector("input[name='CreateWordsCommand.Words[0].Text']").addEventListener("change", addDictionaryRow)
     function addDictionaryRow(){
-        let lastRow = document.querySelector("input[name='CreateDictionaryRowCommand.CreateWordCommand.CreateWords[" + i + "].Text']")
+        let lastRow = document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']")
         
         if (!lastRow.value) return
 
@@ -75,11 +67,11 @@
         let input1 = document.createElement("input")
         input1.className = "form-control"
         input1.type = "text"
-        input1.name = "CreateDictionaryRowCommand.CreateWordCommand.CreateWords[" + i + "].Text"
+        input1.name = "CreateWordsCommand.Words[" + i + "].Text"
         let input2 = document.createElement("input")
         input2.className = "form-control"
         input2.type = "text"
-        input2.name = "CreateDictionaryRowCommand.CreateTranslationCommand.CreateTranslations[" + i + "].Text"
+        input2.name = "CreateWordsCommand.Words[" + i + "].Translation.Text"
         let div = document.createElement("div")
         div.className = "input-group  bg-opacity-10 border border-secondary-subtle rounded"
         div.append(input1)
@@ -87,7 +79,7 @@
 
         document.querySelector("#DictionaryRows").append(div)
         
-        document.querySelector("input[name='CreateDictionaryRowCommand.CreateWordCommand.CreateWords[" + i + "].Text']").addEventListener("change", addDictionaryRow)
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']").addEventListener("change", addDictionaryRow)
     }
     document.querySelector("#CreateDictionaryCommand_WordLanguage").addEventListener("change", (e) => {
         fillLanguages(e, "#wordLanguageName")
@@ -104,8 +96,8 @@
     document.querySelector("#CreateDictionaryForm").addEventListener("submit", event => {
         event.preventDefault()
         let form = document.querySelector("#CreateDictionaryForm")
-        document.querySelector("input[name='CreateDictionaryRowCommand.CreateWordCommand.CreateWords["+i+"].Text']").remove()
-        document.querySelector("input[name='CreateDictionaryRowCommand.CreateTranslationCommand.CreateTranslations[" + i + "].Text']").remove()
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']").remove()
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Translation.Text']").remove()
         form.submit()
     })
 </script>
