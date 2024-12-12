@@ -1,0 +1,100 @@
+﻿@using Application
+@using Application.Dictionaries.Commands.UpdateDictionaryAndRows
+@using Domain.Enums
+@model UpdateDictionaryAndRowsCommand
+
+<section>
+    <div class="container text-left">
+        <div class="row justify-content-center">
+            <div class="col-4 border bg-opacity-10 rounded pb-2">
+                <form id="UpdateDictionaryForm" method="post" asp-action="UpdateDictionary">
+                    <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                    <input hidden asp-for="UpdateDictionaryCommand.WordLanguage" value="@Model.UpdateDictionaryCommand.WordLanguage" />
+                    <input hidden asp-for="UpdateDictionaryCommand.TranslationLanguage" value="@Model.UpdateDictionaryCommand.TranslationLanguage" />
+                    <input hidden asp-for="UpdateWordsCommand.DictionaryId" value="@Model.UpdateWordsCommand.DictionaryId" />
+                    <input hidden asp-for="CreateWordsCommand.DictionaryId" value="@Model.UpdateWordsCommand.DictionaryId" />
+                    <input asp-for="UpdateDictionaryCommand.DictionaryId" value="@Model.UpdateDictionaryCommand.DictionaryId" hidden />
+                    <div>
+                        <label asp-for="UpdateDictionaryCommand.Title"></label>
+                        <input class="form-control text-center" type="text" asp-for="UpdateDictionaryCommand.Title" placeholder="Введите название словаря" />
+                        <span asp-validation-for="UpdateDictionaryCommand.Title" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="UpdateDictionaryCommand.Description"></label>
+                        <textarea style="resize: none;" rows="4" class="form-control" asp-for="UpdateDictionaryCommand.Description" placeholder="Введите описание словаря"></textarea>
+                        <span asp-validation-for="UpdateDictionaryCommand.Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-inline">
+                        <label asp-for="UpdateDictionaryCommand.WordLanguage"></label>
+                        <label asp-for="UpdateDictionaryCommand.TranslationLanguage" class="float-end"></label>
+                    </div>
+                    <div class="input-group">
+                        <input class="form-control" readonly asp-for="UpdateDictionaryCommand.WordLanguage.GetAttribute<DisplayAttribute>().Name" />
+                        <input class="form-control text-end" readonly asp-for="UpdateDictionaryCommand.TranslationLanguage.GetAttribute<DisplayAttribute>().Name" />
+
+                        <div class="form-inline">
+                            <span asp-validation-for="UpdateDictionaryCommand.WordLanguage" class="text-danger float-end"></span>
+                            <span asp-validation-for="UpdateDictionaryCommand.TranslationLanguage" class="text-danger float-end"></span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div id="DictionaryRows">
+                        <div class="form-inline">
+                            <span asp-validation-for="UpdateWordsCommand.Words[0].Text" class="text-danger"></span>
+                            <span asp-validation-for="UpdateWordsCommand.Words[0].Translation.Text" class="text-danger float-end"></span>
+                        </div>
+                        @for (int i = 0; i < Model.UpdateWordsCommand.Words?.Count; i++) {
+                            <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
+                                <input class="form-control" type="text" asp-for="@Model.UpdateWordsCommand.Words[@i].Text" />
+                                <input hidden asp-for="@Model.UpdateWordsCommand.Words[@i].Id" value="@Model.UpdateWordsCommand.Words[@i].Id"/>
+                                <input hidden asp-for="@Model.UpdateWordsCommand.Words[@i].CreatedAt" value="@Model.UpdateWordsCommand.Words[@i].CreatedAt" />
+                                <input class="form-control" type="text" asp-for="@Model.UpdateWordsCommand.Words[@i].Translation.Text" />
+                                <input hidden asp-for="@Model.UpdateWordsCommand.Words[@i].Translation.WordId" value="@Model.UpdateWordsCommand.Words[@i].Translation.WordId" />
+                            </div>
+                        }
+                        <div class="input-group  bg-opacity-10 border border-secondary-subtle rounded">
+                            <input class="form-control" type="text" name="CreateWordsCommand.Words[0].Text" />
+                            <input class="form-control" type="text" name="CreateWordsCommand.Words[0].Translation.Text" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    let i = 0;
+
+    document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']").addEventListener("change", addDictionaryRow)
+    function addDictionaryRow() {
+        let lastRow = document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']")
+
+        if (!lastRow.value) return
+
+        i++
+        let input1 = document.createElement("input")
+        input1.className = "form-control"
+        input1.type = "text"
+        input1.name = "CreateWordsCommand.Words[" + i + "].Text"
+        let input2 = document.createElement("input")
+        input2.className = "form-control"
+        input2.type = "text"
+        input2.name = "CreateWordsCommand.Words[" + i + "].Translation.Text"
+        let div = document.createElement("div")
+        div.className = "input-group  bg-opacity-10 border border-secondary-subtle rounded"
+        div.append(input1)
+        div.append(input2)
+
+        document.querySelector("#DictionaryRows").append(div)
+
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']").addEventListener("change", addDictionaryRow)
+    }
+    document.querySelector("#UpdateDictionaryForm").addEventListener("submit", event => {
+        event.preventDefault()
+        let form = document.querySelector("#UpdateDictionaryForm")
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Text']").remove()
+        document.querySelector("input[name='CreateWordsCommand.Words[" + i + "].Translation.Text']").remove()
+        form.submit()
+    })
+</script>
