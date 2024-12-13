@@ -39,7 +39,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> ChangeSettings(SettingViewModel model) {
+        public async Task<IActionResult> UpdateSettings(SettingViewModel model) {
             var result = await sender.Send(model.ChangeUserSettingsCommand!);
 
             if (result.IsSuccess && result.Value()) {

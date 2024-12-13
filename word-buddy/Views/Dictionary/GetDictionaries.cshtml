@@ -20,7 +20,7 @@
                     @if(Model.Dictionaries != null){
                         @foreach (var d in Model.Dictionaries) {
                             <div class="col">
-                                <a  asp-action="getDictionary" asp-route-dictionaryId="@d.Id" style="text-decoration: none;">
+                                <a asp-action="GetDictionaries" asp-route-dictionaryId="@d.Id" style="text-decoration: none;">
                                 <article class="card text-bg-light mb-3">
                                     <header class="card-header text-center">@d.Title.Substring(0, Math.Min(d.Title.Length, 50))</header>
                                     <div class="card-body text-left">
@@ -35,7 +35,7 @@
                         }
                     }
                 </div>
-                <div page-model="@Model.PagingInfo" page-action="Index" type-page="currentPage"
+                <div page-model="@Model.PagingInfo" page-action="GetDictionaries" type-page="currentPage"
                      page-classes-enabled="true" page-class="btn" page-class-normal="btn-outline-dark"
                      page-class-selected="btn-primary" class="btn-group pull-right m-1">
                 </div>

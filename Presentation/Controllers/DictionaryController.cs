@@ -29,7 +29,8 @@ namespace Presentation.Controllers
             this.sender = sender;
         }
         [Authorize(Roles="User")]
-        public async Task<IActionResult> Index(int currentPage=1) {
+        [HttpGet]
+        public async Task<IActionResult> GetDictionaries(int currentPage=1) {
             var dictionariesResult = await sender.Send(new GetPagingDictionariesQuery
             {
                 PagingInfo = new PagingInfo
@@ -75,12 +76,12 @@ namespace Presentation.Controllers
                 TempData["DictionaryCreated"] = "Словарь создан";
             }
 
-            return Redirect("Index");
+            return Redirect("GetDictionaries");
         }
 
         [Authorize(Roles = "WordLearner")]
         [HttpGet("{dictionaryId:Guid}")]
-        public async Task<IActionResult> GetDictionary(Guid dictionaryId) {
+        public async Task<IActionResult> GetDictionaries(Guid dictionaryId) {
             var dictionaryResult = await sender.Send(new GetDictionaryQuery { DictionaryId= dictionaryId });
 
             if (dictionaryResult.IsSuccess) {
@@ -101,7 +102,7 @@ namespace Presentation.Controllers
                     });
                 }
 
-                return View(new UpdateDictionaryAndRowsCommand
+                return View("GetDictionary", new UpdateDictionaryAndRowsCommand
                 {
                     UpdateDictionaryCommand = new UpdateDictionaryCommand
                     {
@@ -120,7 +121,7 @@ namespace Presentation.Controllers
                 });
             }
 
-            return Redirect("Index");
+            return Redirect("GetDictionary");
         }
 
         [Authorize(Roles = "WordLearner")]
@@ -131,7 +132,7 @@ namespace Presentation.Controllers
             var dictionaryResult = await sender.Send(model);
 
 
-            return Redirect("Index");
+            return Redirect("GetDictionaries");
         }
     }
 }
