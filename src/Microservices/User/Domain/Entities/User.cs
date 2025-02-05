@@ -39,12 +39,7 @@ namespace Domain.Entities
             Country country,
             string hashPassword,
             SystemRole systemRole,
-            UserRole userRole,
-            IEmailUniqueCheck emailUniqueCheck) {
-
-            if (!await emailUniqueCheck.IsUnique(email)) {
-                return Result.Failure<User>(DomainError.UserError.EmailIsArleadyUsed);
-            }
+            UserRole userRole) {
             
             return Result.Success(
                     new User

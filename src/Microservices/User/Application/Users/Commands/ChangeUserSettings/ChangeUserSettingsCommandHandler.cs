@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.HelpClasses;
+using Domain.Errors;
 using Domain.Repositories;
 using Domain.Shared;
 
@@ -26,11 +27,14 @@ namespace Application.Users.Commands.ChangeSettings
                     request.Country,
                     request.Password != null ? HashPassword.Generate(request.Password) : null
                     );
+
+                userRepository.Update(user);
+
+                await unitOfWork.SaveChangesAsync();
             }
-
-            userRepository.Update(user);
-
-            await unitOfWork.SaveChangesAsync();
+            else {
+                return Result.Failure<bool>(ApplicationError.User.UserNotFound);
+            }
 
             if (isClaimsChanged) {
                 return Result.Success(isClaimsChanged);

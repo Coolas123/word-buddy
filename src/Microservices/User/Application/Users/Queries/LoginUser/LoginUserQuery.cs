@@ -9,6 +9,5 @@ namespace Application.Users.Queries.LoginUser
         public string? Email { get; set; }
         [Display(Name = "Пароль")]
         public string? Password { get; set; }
-        public string? ReturnUrl { get; set; }
     }
 }

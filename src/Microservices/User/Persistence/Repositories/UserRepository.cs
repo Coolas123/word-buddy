@@ -12,5 +12,9 @@ namespace Persistence.Repositories
         public async Task<User> GetByEmailAsync(string email) {
             return await dbSet.FirstOrDefaultAsync(x => x.Email == email);
         }
+
+        public async Task<IEnumerable<User>> SelectAll() {
+            return dbSet.Where(x => x.Id != null).ToList();
+        }
     }
 }

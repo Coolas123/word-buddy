@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
-using Domain.Enums;
+using Domain.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dictionaries.Commands.UpdateDictionary

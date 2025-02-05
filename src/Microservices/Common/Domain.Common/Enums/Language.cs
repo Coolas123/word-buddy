@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Enums
+namespace Domain.Common.Enums
 {
     public enum Language
     {

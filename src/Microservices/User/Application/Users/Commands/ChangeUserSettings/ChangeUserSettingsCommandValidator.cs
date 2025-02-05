@@ -6,18 +6,21 @@ namespace Application.Users.Commands.ChangeSettings
     {
         public ChangeUserSettingsCommandValidator() {
             RuleFor(x => x.UserName)
+                .Cascade(CascadeMode.Stop)
                 .MaximumLength(64)
                 .WithMessage("прозвище должно быть не длинее 64 символов")
                 .Matches(@"[A-Za-z0-9]+")
                 .WithMessage("Прозвище должно состоять из латинских букв, цифр");
 
             RuleFor(x => x.Email)
+                .Cascade(CascadeMode.Stop)
                 .EmailAddress()
                 .WithMessage("Неверный формат почты")
                 .MaximumLength(64)
                 .WithMessage("Почта не должна превышать 64 символа");
 
             RuleFor(x => x.Password)
+                .Cascade(CascadeMode.Stop)
                 .MaximumLength(32)
                 .WithMessage("Пароль не должен превышать 32 символа")
                 .MinimumLength(6)
@@ -27,6 +30,7 @@ namespace Application.Users.Commands.ChangeSettings
 
             When(user => !string.IsNullOrEmpty(user.Password), () => {
                 RuleFor(user => user.ConfirmPassword)
+                .Cascade(CascadeMode.Stop)
                .Equal(x => x.Password)
                .WithMessage("Пароли не совпадают")
                .NotEmpty()

@@ -4,6 +4,8 @@ using Application.HelpClasses;
 using Domain.EntityServices;
 using Domain.Repositories;
 using FluentValidation;
+using MassTransit.Contracts;
+using MassTransit.DTO.Dictionary.GetDictionaries;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -12,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
+using System.Reflection;
 using System.Text;
 
 namespace User.API
@@ -100,6 +103,16 @@ namespace User.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailUniqueCheck, EmailUniqueCheck>();
+
+            var section = configuration.GetSection("RabbitServer");
+            ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
+            {
+                IsDegub = section.GetValue<bool>("IsDegub"),
+                ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
+                Configurator = bus => {
+                    bus.AddRequestClient<DictionariesRequest>();
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

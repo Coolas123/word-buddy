@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\MassTransit.DTO\MassTransit.DTO.csproj" />
+    <ProjectReference Include="..\..\Common\MassTransit\MassTransit.Configuration.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 

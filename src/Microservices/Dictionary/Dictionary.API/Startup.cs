@@ -1,6 +1,8 @@
 ﻿using Application;
 using Domain.Repositories;
 using FluentValidation;
+using Infrastructure.MassTransit.Dictionary;
+using MassTransit.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -9,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
+using System.Reflection;
 using System.Text;
 
 namespace Dictionary.API
@@ -39,17 +42,17 @@ namespace Dictionary.API
                 cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
                 .AddJwtBearer(cfg => {
-                    cfg.TokenValidationParameters = new()
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                    cfg.RequireHttpsMetadata = true;
-                    cfg.SaveToken = true;
-                });
+                     cfg.TokenValidationParameters = new()
+                     {
+                         ValidateIssuerSigningKey = true,
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                         ClockSkew = TimeSpan.Zero,
+                         ValidateIssuer = false,
+                         ValidateAudience = false
+                     };
+                     cfg.RequireHttpsMetadata = true;
+                     cfg.SaveToken = true;
+                 });
             services.AddAuthorization();
 
             services.AddMediatR(cfg => {
@@ -97,6 +100,16 @@ namespace Dictionary.API
             services.AddScoped<IDictionaryRepository, DictionaryRepository>();
             services.AddScoped<IWordRepository, WordRepository>();
             services.AddScoped<ITranslationRepository, TranslationRepository>();
+
+            var section = configuration.GetSection("RabbitServer");
+            ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
+            {
+                IsDegub = section.GetValue<bool>("IsDegub"),
+                ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
+                Configurator = bus => {
+                    bus.AddConsumer<DictionariesConsumer>();
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

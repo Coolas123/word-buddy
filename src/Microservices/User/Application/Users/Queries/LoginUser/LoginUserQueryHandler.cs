@@ -18,6 +18,14 @@ namespace Application.Users.Queries.LoginUser
         {
             var user = await userRepository.GetByEmailAsync(request.Email);
 
+            if(user == null ) {
+                return Result.Failure<string>(ApplicationError.User.UserNotFound);
+            }
+
+            if(user.HashPassword != HashPassword.Generate(request.Password)) {
+                return Result.Failure<string>(ApplicationError.User.WrongPassword);
+            }
+
             var token = JWTGenerator.Create(user);
 
             if (token != null) {

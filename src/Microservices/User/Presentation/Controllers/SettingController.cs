@@ -46,25 +46,32 @@ namespace Presentation.Controllers
         /// </summary>
         /// <param name="model">Модель настроек пользователя</param>
         /// <returns>Сообщение успешности операции или список ошибок</returns>
-        /// <response code="200">Настройки успешно обновлены</response>
+        /// <response code="200">Сообщение об успешно обновленных настройках</response>
         /// <response code="400">Список ошибок при неудаче обновить настройки</response>
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Put(ChangeUserSettingsCommand model) {
+        public async Task<IActionResult> Put([FromBody]ChangeUserSettingsCommand model) {
+            model.UserId = Guid.Parse(User.FindFirstValue("Id"));
+
             var result = await sender.Send(model);
 
             if (result.IsSuccess && result.Value()) {
                 await HttpContext.SignOutAsync();
 
-                return StatusCode(200,"Настройки успешно обновлены");
+                return StatusCode(200,"Необходимо перезайти в аккаунт");
             }
-            else if (result.IsFailure) {
-                var validationResult = (IValidationResult)result;
-
-                return StatusCode(400, validationResult.Errors);
+            else if (result.IsSuccess) {
+                return StatusCode(200, "Настройки успешно обновлены");
             }
-
-            return StatusCode(400,"Не удалось обновить настройки");
+            else {
+                if (result is IValidationResult) {
+                    var r = (IValidationResult)result;
+                    return StatusCode(400, r.Errors);
+                }
+                else {
+                    return StatusCode(400, result.Error);
+                }
+            }
         }
     }
 }

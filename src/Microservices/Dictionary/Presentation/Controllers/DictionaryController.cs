@@ -27,7 +27,7 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Взятие всех словарей пользователя
+        /// Возврат всех словарей пользователя
         /// </summary>
         /// <returns>Список всех словарей пользователя</returns>
         /// <response code="200">Возврат списка словарей</response>

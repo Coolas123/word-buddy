@@ -11,18 +11,15 @@ namespace Application.Users.Commands.RegisterUser
     public sealed class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, string>
     {
         private readonly IUserRepository userRepository;
-        private readonly IEmailUniqueCheck emailUniqueCheck;
         private readonly IUnitOfWork unitOfWork;
         private readonly JWTGenerator JWTGenerator;
 
         public RegisterUserCommandHandler(
             IUserRepository userRepository, 
-            IEmailUniqueCheck emailUniqueCheck, 
             IUnitOfWork unitOfWork,
             JWTGenerator JWTGenerator) {
             this.unitOfWork = unitOfWork;
             this.userRepository = userRepository;
-            this.emailUniqueCheck = emailUniqueCheck;
             this.JWTGenerator = JWTGenerator;
         }
 
@@ -34,15 +31,14 @@ namespace Application.Users.Commands.RegisterUser
                 request.Country,
                 HashPassword.Generate(request.Password),
                 Domain.Enums.SystemRole.User,
-                Domain.Enums.UserRole.WordLearner,
-                emailUniqueCheck);
+                Domain.Enums.UserRole.WordLearner);
             
             if (userResult.IsSuccess) {
                 await userRepository.CreateAsync(userResult.Value());
 
                 var jwtToken = JWTGenerator.Create(userResult.Value());
                 if (jwtToken == null) {
-                    Result.Failure<string>(ApplicationError.JWTError.TokenNull);
+                    return Result.Failure<string>(ApplicationError.JWTError.TokenNull);
                 }
 
                 await unitOfWork.SaveChangesAsync();

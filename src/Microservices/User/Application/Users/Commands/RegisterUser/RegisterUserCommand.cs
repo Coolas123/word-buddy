@@ -22,7 +22,5 @@ namespace Application.Users.Commands.RegisterUser
 
         [Display(Name = "Почта")]
         public string? Email { get; set; }
-
-        public string? ReturnUrl { get; set; }
     }
 }

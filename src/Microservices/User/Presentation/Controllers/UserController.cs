@@ -1,5 +1,6 @@
 ﻿using Application.Users.Commands.RegisterUser;
 using Application.Users.Queries.LoginUser;
+using Domain.Repositories;
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,7 @@ namespace Presentation.Controllers
         /// <response code="400">Неверно введенные данные</response>
         [HttpPost("Login")]
         [AllowAnonymous]
-        public async Task<IActionResult> PostLogin(LoginUserQuery model) {
+        public async Task<IActionResult> PostLogin([FromBody]LoginUserQuery model) {
             var token = await sender.Send(model);
             if (token.IsSuccess) {
                 HttpContext.Response.Cookies.Append("token", token.Value());
@@ -50,7 +51,7 @@ namespace Presentation.Controllers
         /// <response code="400">Неверные данные для создания пользователя</response>
         [HttpPost("Register")]
         [AllowAnonymous]
-        public async Task<IActionResult> PostRegistration(RegisterUserCommand model) {
+        public async Task<IActionResult> PostRegistration([FromBody]RegisterUserCommand model) {
             var token = await sender.Send(model);
             if (token.IsSuccess) {
                 HttpContext.Response.Cookies.Append("token", token.Value());

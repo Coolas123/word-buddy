@@ -23,6 +23,12 @@ namespace Domain.Errors
                 "GetUserQuery.Handle",
                 "user with same id not found"
             );
+
+            public static readonly Error WrongPassword = new Error
+            (
+                "LoginUserQuery.Handle",
+                "the password is incorrect"
+            );
         }
 
         public static class Dictionary

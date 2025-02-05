@@ -6,7 +6,7 @@ namespace Persistence
     public sealed class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions opt): base(opt) {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         public DbSet<User> Users { get; set; }

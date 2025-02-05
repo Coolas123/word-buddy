@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
+using Domain.Common.Enums;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Repositories;
