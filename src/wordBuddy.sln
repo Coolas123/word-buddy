@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AB53C365
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Api.IntegrationTests", "Microservices\User\Tests\User.Api.IntegrationTests\User.Api.IntegrationTests.csproj", "{5546AB9A-402D-46B8-B5B1-1D3065F2D1B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Api.UnitTests", "User.Api.UnitTests\User.Api.UnitTests.csproj", "{D2D8E043-F3BD-4725-A15D-8F2DB1B71D05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Api.UnitTests", "Microservices\User\Tests\User.Api.UnitTests\User.Api.UnitTests.csproj", "{D2D8E043-F3BD-4725-A15D-8F2DB1B71D05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
