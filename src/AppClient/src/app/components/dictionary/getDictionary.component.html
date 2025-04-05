@@ -1,0 +1,181 @@
+<div class="container-fluid text-left">
+    <section>
+        <div class="border bg-opacity-10 rounded pb-2">
+            <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
+                <div>
+                    <button type="submit" class="btn btn-success"
+                        [disabled]="formSubmitted && formGroup.invalid || formSubmitted || !formChanged"
+                        [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                        Сохранить изменения
+                    </button>
+                </div>
+                @for (control of formGroup.getDictionaryControls; track $index; let i = $index){
+                @if(control.modelProperty==="Title"){
+                <label>{{control.label}}</label>
+                <input class="form-control" name="{{control.modelProperty}}"
+                    formControlName="{{control.modelProperty}}" />
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+                @else if(control.modelProperty==="Description"){
+                <div class="pb-2">
+                    <label>{{control.label}}</label>
+                    <textarea style="resize: none;" rows="4" class="form-control"
+                        asp-for="CreateDictionaryCommand.Description" placeholder="Введите описание словаря"
+                        name="{{control.modelProperty}}" formControlName="{{control.modelProperty}}"></textarea>
+                    @if((formSubmitted || control.dirty) && control.invalid){
+                    <ul class="text-danger">
+                        @for(error of control.getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+                </div>
+                }
+                @else if(control.modelProperty === "WordLanguage"){
+                    <div class="form-inline">
+                        <label>{{control.label}}</label>
+                        <label class="float-end">{{formGroup.getDictionaryControls[i+1].label}}</label>
+                    </div>
+
+                <div class="input-group">
+                    <select class="form-select" name="{{control.modelProperty}}"
+                        formControlName="{{control.modelProperty}}">
+                        @for(key of getLanguage(); track key){
+                        <option [ngValue]="languages[key]">{{key}}</option>
+                        }
+                        <option [value]="newDictionary.UpdateDictionaryCommand?.WordLanguage" selected>
+                            {{newDictionary.UpdateDictionaryCommand?.WordLanguage}}</option>
+                    </select>
+
+                    <select class="form-select" name="{{formGroup.getDictionaryControls[i+1].modelProperty}}"
+                        formControlName="{{formGroup.getDictionaryControls[i+1].modelProperty}}">
+                        @for(key of getLanguage(); track key){
+                        <option [ngValue]="languages[key]">{{key}}</option>
+                        }
+                        <option [value]="newDictionary.UpdateDictionaryCommand?.TranslationLanguage" selected>
+                            {{newDictionary.UpdateDictionaryCommand?.TranslationLanguage}}</option>
+                    </select>
+
+                </div>
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                <hr />
+                }
+                }
+                <div formArrayName="DictionaryRows">
+                    @for (row of getRows().controls; track row; let i=$index){
+                    <div class="input-group bg-opacity-10 border border-secondary-subtle rounded" [formGroupName]="i">
+                        
+                        <div class="dropdown">
+                            <a style="width: 38px;" class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="gray" class="bi bi-list" viewBox="0 0 16 16">
+                                  <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                              </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                              <li><a (click)="generateWordContext(i)" (click)="getPompt($event)" type="button" class="dropdown-item">Создать контекст</a></li>
+                            </ul>
+                      </div>
+                        
+
+                        <input class="form-control" formControlName="WordText" />
+                        
+                        @if(row.controls["WordText"] != undefined && (formSubmitted || row.controls["WordText"].dirty) &&
+                        row.controls["WordText"].invalid){
+
+                        <ul class="text-danger">
+                            @for(error of getControl(row.controls["WordText"]).getValidationMessages(); track error){
+                            <li>
+                                {{error}}
+                            </li>
+                            }
+                        </ul>
+                        }
+
+                        <input class="form-control" formControlName="WordTranslation" />
+                        @if(row.controls["WordTranslation"] != undefined && (formSubmitted ||
+                        row.controls["WordTranslation"].dirty) &&
+                        row.controls["WordTranslation"].invalid){
+                        <ul class="text-danger">
+                            @for(error of getControl(row.controls["WordTranslation"]).getValidationMessages(); track error){
+                            <li>
+                                {{error}}
+                            </li>
+                            }
+                        </ul>
+                        }
+                    </div>
+                    
+                    <div class="text-break bg-opacity-10 border border-secondary-subtle rounded">
+                        @if(openMenuFlag){
+                            @if(this.wordContext ==""){
+                                <span>loading...</span>
+                            }
+                            @else {<span>{{this.wordContext}}</span>}
+                        }
+                    </div>
+                    }
+                </div>
+
+                <div formArrayName="NewDictionaryRows">
+                    @for (row of getNewRows().controls; track row; let i=$index){
+                    <div class="input-group bg-opacity-10 border border-secondary-subtle rounded" [formGroupName]="i">
+                        <input class="form-control" formControlName="NewWord"
+                            (ngModelChange)="this.inputSubject.next($event)" />
+                        @if(row.controls["NewWord"] != undefined && (formSubmitted || row.controls["NewWord"].dirty) &&
+                        row.controls["NewWord"].invalid){
+
+                        <ul class="text-danger">
+                            @for(error of getControl(row.controls["NewWord"]).getValidationMessages(); track error){
+                            <li>
+                                {{error}}
+                            </li>
+                            }
+                        </ul>
+                        }
+
+                        <input class="form-control" formControlName="NewTranslation"
+                            (ngModelChange)="this.inputSubject.next($event)" />
+                        @if(row.controls["NewTranslation"] != undefined && (formSubmitted ||
+                        row.controls["NewTranslation"].dirty) &&
+                        row.controls["NewTranslation"].invalid){
+                        <ul class="text-danger">
+                            @for(error of getControl(row.controls["NewTranslation"]).getValidationMessages(); track
+                            error){
+                            <li>
+                                {{error}}
+                            </li>
+                            }
+                        </ul>
+                        }
+                    </div>
+
+                    }
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<style>
+    .dropdown:hover .dropdown-menu {
+  display: block;
+}
+</style>

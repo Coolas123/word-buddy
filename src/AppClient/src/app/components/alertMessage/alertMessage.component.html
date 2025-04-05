@@ -1,0 +1,6 @@
+@if(lastMessage && !isClosed){
+    <div class="alert alert-info p-2 text-center alert-dismissible fade show" role="alert" [class.bg-danger]="lastMessage.error">
+        <h4>{{lastMessage.text}}</h4>
+        <button type="button" class="btn-close" (click)="closeBtn()"></button>
+    </div>
+}

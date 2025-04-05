@@ -3,13 +3,14 @@ using Application.Dictionaries.Commands.UpdateDictionary;
 using Application.Dictionaries.Commands.UpdateDictionaryAndRows;
 using Application.Dictionaries.Queries.GetDictionaries;
 using Application.Dictionaries.Queries.GetDictionary;
-using Application.Translations.Commands.UpdateTranslation;
-using Application.Words.Commands.UpdateWord;
-using Application.Words.Commands.UpdateWord.UpdateWords;
+using Application.DictionaryRow.Commands.CreateWord;
+using Application.DictionaryRow.Commands.UpdateWord;
+using Application.DictionaryRow.Commands.UpdateWord.UpdateWords;
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.ViewModels;
 using System.Security.Claims;
 
 namespace Presentation.Controllers
@@ -27,11 +28,11 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Возврат всех словарей пользователя
+        /// Get all users dictionaries
         /// </summary>
-        /// <returns>Список всех словарей пользователя</returns>
-        /// <response code="200">Возврат списка словарей</response>
-        /// <response code="400">Словари не найдены</response>
+        /// <returns>Returns a list of all users dictionaries or an error message</returns>
+        /// <response code="200">The request was successful. Returns a list of all users dictionaries</response>
+        /// <response code="400">The request was a failure. Returns an error message</response>
         [Authorize(Roles="User")]
         [HttpGet]
         public async Task<IActionResult> Get() {
@@ -41,24 +42,24 @@ namespace Presentation.Controllers
             });
 
             if (dictionariesResult.IsSuccess) {
-
-                return StatusCode(200,dictionariesResult.Value());
+                return StatusCode(200, DictionariesViewModel.CreateArray(dictionariesResult.Value()));
             }
 
             return StatusCode(400,"Не удалось найти словари");
         }
 
         /// <summary>
-        /// Создание словаря
+        /// Create a new dictionary
         /// </summary>
-        /// <param name="model">Модель словаря и строк со словами</param>
-        /// <returns>Сообщение успешности операции или список ошибок</returns>
-        /// <response code="200">Словарь успешно создан</response>
-        /// <response code="400">Список ошибок неудачи создания словаря</response>
+        /// <param name="model">New dictionary model</param>
+        /// <returns>Returns a success message or a list of errors</returns>
+        /// <response code="200">The request was successful. Returns a success message</response>
+        /// <response code="400">The request was a failure. Returns an error message</response>
         [Authorize(Roles = "WordLearner")]
         [HttpPost]
         public async Task<IActionResult> Post(CreateDictionaryAndRowsCommand model) {
-            model.CreateDictionaryCommand.CreatedAt = DateTime.Now.ToUniversalTime();
+            model.CreateDictionaryCommand.LastViewedAt = DateTime.Now.ToUniversalTime();
+            model.CreateDictionaryCommand.UserId = Guid.Parse(User.FindFirstValue("Id"));
 
             var CreateDictionaryResult = await sender.Send(model);
             
@@ -73,32 +74,28 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Просмотр словаря с его содержимым
+        /// Get dictionary
         /// </summary>
-        /// <param name="dictionaryId">id словаря</param>
-        /// <returns>Словарь с его содержимым</returns>
-        /// <response code="200">Возврат словаря</response>
-        /// <response code="400">Словарь не найден</response>
+        /// <param name="id">Dictionary id</param>
+        /// <returns>Returns a ditionary</returns>
+        /// <response code="200">The request was successful. Returns a dictionary</response>
+        /// <response code="400">The request was a failure. Returns an error message</response>
         [Authorize(Roles = "WordLearner")]
-        [HttpGet("GetDictionariesAndRows/{dictionaryId:Guid}")]
-        public async Task<IActionResult> GetDictionariesAndRows(Guid dictionaryId) {
-            var dictionaryResult = await sender.Send(new GetDictionaryQuery { DictionaryId= dictionaryId });
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDictionariesAndRows(string id) {
+            var dictionaryResult = await sender.Send(new GetDictionaryQuery { DictionaryId= Guid.Parse(id) });
 
             if (dictionaryResult.IsSuccess) {
-                var viewWords = new List<UpdateWordCommand>(dictionaryResult.Value().Words.Count);
+                var viewWords = new List<UpdateDictionaryRowCommand>(dictionaryResult.Value().DictionaryRows.Count);
 
-                foreach (var word in dictionaryResult.Value().Words) {
-                    viewWords.Add(new UpdateWordCommand
+                foreach (var word in dictionaryResult.Value().DictionaryRows) {
+                    viewWords.Add(new UpdateDictionaryRowCommand
                     {
                         Id = word.Id,
-                        Text = word.Text,
+                        WordText = word.WordText,
                         LearnStatus = word.LearnStatus,
                         LearnStatusChangedAt = word.LearnStatusChangedAt,
-                        Translation = new UpdateTranslationCommand
-                        {
-                            WordId = word.Translation.WordId,
-                            Text = word.Translation.Text,
-                        }
+                        WordTranslation = word.WordTranslation
                     });
                 }
 
@@ -111,12 +108,17 @@ namespace Presentation.Controllers
                         LastViewedAt = dictionaryResult.Value().LastViewedAt,
                         WordLanguage = dictionaryResult.Value().WordLanguage,
                         TranslationLanguage = dictionaryResult.Value().TranslationLanguage,
+                        Id = dictionaryResult.Value().Id
+                    },
+                    UpdateDictionaryRowsCommand = new UpdateDictionaryRowsCommand
+                    {
+                        DictionaryRows = viewWords,
                         DictionaryId = dictionaryResult.Value().Id
                     },
-                    UpdateWordsCommand = new UpdateWordsCommand
+                    CreateDictionaryRowsCommand = new CreateDictionaryRowsCommand
                     {
-                        Words = viewWords,
-                        DictionaryId = dictionaryResult.Value().Id
+                        DictionaryId = dictionaryResult.Value().Id,
+                        DictionaryRows = new()
                     }
                 });
             }
@@ -125,12 +127,12 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Обновление словаря
+        /// Update dictionary
         /// </summary>
-        /// <param name="model">Модель со словарем и его содержимым</param>
-        /// <returns>Код состояния</returns>
-        /// <response code="200">Словарь обновлен</response>
-        /// <response code="400">Не удалось обновить словарь</response>
+        /// <param name="model">Update dictionary model</param>
+        /// <returns>Returns a success or error message</returns>
+        /// <response code="200">The request was successful. Returns a success message</response>
+        /// <response code="400">The request was a failure. Returns an error message</response>
         [Authorize(Roles = "WordLearner")]
         [HttpPut]
         public async Task<IActionResult> Put(UpdateDictionaryAndRowsCommand model) {

@@ -11,23 +11,19 @@ namespace Application.Dictionaries.Commands.CreateDictionary
                 .MaximumLength(128)
                 .WithMessage("Максимальная длина заголовка должна быть 128 символ")
                 .NotEmpty()
-                .WithMessage("Введите название словаря")
-                .OverridePropertyName("CreateDictionaryCommand.Title");
+                .WithMessage("Введите название словаря");
 
             RuleFor(x => x.Description)
                 .MaximumLength(256)
-                .WithMessage("Длина описания не должна превышать 256 символов")
-                .OverridePropertyName("CreateDictionaryCommand.Description");
+                .WithMessage("Длина описания не должна превышать 256 символов");
 
             RuleFor(x => x.WordLanguage)
                 .NotEmpty()
-                .WithMessage("Выберите язык слова")
-                .OverridePropertyName("CreateDictionaryCommand.WordLanguage");
+                .WithMessage("Выберите язык слова");
 
             RuleFor(x => x.TranslationLanguage)
                 .NotEmpty()
-                .WithMessage("Выберите язык перевода")
-                .OverridePropertyName("CreateDictionaryCommand.TranslationLanguage");
+                .WithMessage("Выберите язык перевода");
         }
     }
 }

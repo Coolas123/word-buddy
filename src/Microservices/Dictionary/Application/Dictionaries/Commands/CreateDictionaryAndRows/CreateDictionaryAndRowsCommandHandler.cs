@@ -1,5 +1,4 @@
 ﻿using Application.Abstractions.Messaging;
-using Domain.Repositories;
 using Domain.Shared;
 using MediatR;
 
@@ -19,21 +18,13 @@ namespace Application.Dictionaries.Commands.CreateDictionaryRow
                 return createDictionaryResult;
             }
 
-            request.CreateWordsCommand.DictionaryId = createDictionaryResult.Value();
+            request.CreateDictionaryRowsCommand.DictionaryId = createDictionaryResult.Value();
 
-            var createWordResult =  await sender.Send(request.CreateWordsCommand);
+            var createWordResult = await sender.Send(request.CreateDictionaryRowsCommand);
 
             if (createWordResult.IsFailure) {
                 return createWordResult;
             }
-
-            //request.CreateTranslationCommand.WordGuids = CreateWordResult.Value();
-
-            //var CreateTranslationResult = await sender.Send(request.CreateTranslationCommand);
-
-            //if (CreateTranslationResult.IsFailure) {
-            //    return CreateTranslationResult;
-            //}
 
             return Result.Success();
         }

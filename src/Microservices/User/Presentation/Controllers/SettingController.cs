@@ -23,11 +23,11 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Взятие настроек пользователя
+        /// Get user settings
         /// </summary>
-        /// <returns>Модель представления настроек пользователя SettingUserViewModel</returns>
-        /// <response code="200">Настройки успешно найдены</response>
-        /// <response code="204">Пользователь не найден</response>
+        /// <returns>UserName, Email, Country model</returns>
+        /// <response code="200">The request was successful. Returns the model</response>
+        /// <response code="400">The request was a failure. The user was not found</response>
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Get() {
@@ -38,16 +38,16 @@ namespace Presentation.Controllers
             if (patronResult.IsSuccess) {
                 return StatusCode(200, SettingUserViewModel.Create(patronResult.Value()));
             }
-            return StatusCode(204,"Пользователь не найден");
+            return StatusCode(400,"Пользователь не найден");
         }
 
         /// <summary>
-        /// Обновление настроек пользователя
+        /// Update user settings
         /// </summary>
-        /// <param name="model">Модель настроек пользователя</param>
-        /// <returns>Сообщение успешности операции или список ошибок</returns>
-        /// <response code="200">Сообщение об успешно обновленных настройках</response>
-        /// <response code="400">Список ошибок при неудаче обновить настройки</response>
+        /// <param name="model">New user settings model</param>
+        /// <returns>Returns a success message or a list of errors</returns>
+        /// <response code="200">The request was successful. Returns a success message</response>
+        /// <response code="400">The request was a failure. Returns a list of errors</response>
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> Put([FromBody]ChangeUserSettingsCommand model) {

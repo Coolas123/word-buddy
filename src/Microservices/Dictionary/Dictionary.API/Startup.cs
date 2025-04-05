@@ -13,6 +13,7 @@ using Persistence;
 using Persistence.Repositories;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Dictionary.API
 {
@@ -26,7 +27,11 @@ namespace Dictionary.API
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers()
-                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
 
             services.AddDbContext<ApplicationDbContext>(cfg => {
                 cfg.UseNpgsql(configuration["ConnectionStrings:DatabaseConnection"]);
@@ -98,8 +103,7 @@ namespace Dictionary.API
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IDictionaryRepository, DictionaryRepository>();
-            services.AddScoped<IWordRepository, WordRepository>();
-            services.AddScoped<ITranslationRepository, TranslationRepository>();
+            services.AddScoped<IDictionaryRowRepository, DictionaryRowRepository>();
 
             var section = configuration.GetSection("RabbitServer");
             ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration

@@ -16,6 +16,7 @@ using Persistence;
 using Persistence.Repositories;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace User.API
 {
@@ -29,7 +30,12 @@ namespace User.API
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers()
-                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.Converters
+                    .Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
 
             services.AddDbContext<ApplicationDbContext>(cfg => {
                 cfg.UseNpgsql(configuration["ConnectionStrings:DatabaseConnection"]);

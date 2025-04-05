@@ -1,0 +1,50 @@
+<style>
+    input.ng-touched.ng-invalid {
+        border: 2px solid #ff0000
+    }
+
+    input.ng-touched.ng-valid {
+        border: 2px solid #6bc502
+    }
+</style>
+<div class="container-fluid">
+    <section>
+        <header class="text-center">
+            <h1>Регистрация</h1>
+        </header>
+        <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
+            <div class="form-group">
+                @for (control of formGroup.registerUserControls; track control){
+                <label>{{control.label}}</label>
+                @if(control.modelProperty == "Country"){
+                <select name="{{control.modelProperty}}" formControlName="{{control.modelProperty}}"
+                    class="form-select">
+                    @for(key of getCountries(); track key){
+                    <option [ngValue]="countries[key]">{{key}}</option>
+                    }
+                    <option value="" disabled selected>Выберите страну</option>
+                </select>
+                }
+                @else{
+                <input class="form-control" name="{{control.modelProperty}}"
+                    formControlName="{{control.modelProperty}}" />
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+                }
+            </div>
+            <button type="submit" class="btn btn-success mt-2" routerLink="/users/register"
+                [disabled]="formSubmitted && formGroup.invalid || formSubmitted"
+                [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                Зарегистрироваться
+            </button>
+        </form>
+    </section>
+</div>

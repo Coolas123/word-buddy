@@ -1,0 +1,30 @@
+<div class="container-fluid">
+    <section>
+        <header class="text-center">
+            <h1>Авторизация</h1>
+        </header>
+        <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
+            <div class="form-group">
+                @for (control of formGroup.registerUserControls; track control){
+                <label>{{control.label}}</label>
+                <input class="form-control" name="{{control.modelProperty}}"
+                    formControlName="{{control.modelProperty}}" />
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+            </div>
+            <button type="submit" class="btn btn-success mt-2" routerLink="/users/login"
+                [disabled]="formSubmitted && formGroup.invalid || formSubmitted"
+                [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                Войти
+            </button>
+        </form>
+    </section>
+</div>

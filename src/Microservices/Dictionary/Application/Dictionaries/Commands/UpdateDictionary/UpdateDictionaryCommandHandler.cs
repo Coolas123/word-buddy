@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
 using Domain.Common.Enums;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Repositories;
 using Domain.Shared;
 
@@ -19,7 +18,7 @@ namespace Application.Dictionaries.Commands.UpdateDictionary
 
         public async Task<Result> Handle(UpdateDictionaryCommand request, CancellationToken cancellationToken) {
             var updatedDictionary = new Dictionary(
-                (Guid)request.DictionaryId,
+                (Guid)request.Id,
                 (Guid)request.UserId,
                 request.Title,
                 request.Description,

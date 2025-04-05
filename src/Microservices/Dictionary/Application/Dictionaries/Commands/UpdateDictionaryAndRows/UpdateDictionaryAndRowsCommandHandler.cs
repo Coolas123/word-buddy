@@ -1,6 +1,4 @@
 ﻿using Application.Abstractions.Messaging;
-using Application.Words.Commands.CreateWord;
-using Application.Words.Commands.UpdateWord.UpdateWords;
 using Domain.Shared;
 using MediatR;
 
@@ -21,15 +19,15 @@ namespace Application.Dictionaries.Commands.UpdateDictionaryAndRows
                 return updateDictionaryResult;
             }
 
-            if(request.UpdateWordsCommand?.Words?.Count > 0) {
-                var updateDictionaryRowResult = await sender.Send(request.UpdateWordsCommand);
+            if(request.UpdateDictionaryRowsCommand?.DictionaryRows.Count > 0) {
+                var updateDictionaryRowResult = await sender.Send(request.UpdateDictionaryRowsCommand);
                 if (updateDictionaryRowResult.IsFailure) {
                     return updateDictionaryRowResult;
                 }
             }
 
-            if(request.CreateWordsCommand?.Words?.Count > 0) {
-                 var createWordsCommandResult = await sender.Send(request.CreateWordsCommand);
+            if(request.CreateDictionaryRowsCommand?.DictionaryRows.Count > 0) {
+                 var createWordsCommandResult = await sender.Send(request.CreateDictionaryRowsCommand);
                 if (createWordsCommandResult.IsFailure) {
                     return createWordsCommandResult;
                 }

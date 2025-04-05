@@ -1,0 +1,38 @@
+<div class="container-fluid">
+    <section class="row">
+        <div class="text-center pb-2">
+            <header>
+                <h2>Список словарей</h2>
+            </header>
+            <a class="btn btn-success" routerLink="/dictionaries/create">Создать новый словарь</a>
+        </div>
+        <div class="row row-cols-2">
+            @for (dictionary of pagingDictionary; track dictionary; let i=$index) {
+            <div class="col">
+                <a class="ref1" routerLink="/dictionaries/{{dictionary.Id}}" style="text-decoration: none;">
+                    <article class="card text-bg-light mb-3">
+                        <header class="card-header text-center">{{getDictionaryTitle(dictionary)}}</header>
+                        <div class="card-body text-left">
+                            <p class="card-text">{{getDictionaryDescrition(dictionary)}}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-body-secondary">Просмотрено:{{getFormatDate(dictionary.LastViewedAt!)}}</small>
+                        </div>
+                    </article>
+                </a>
+            </div>
+            }
+        </div>
+        <div class="btn-group m-1 d-inline">
+            @for(page of counter(pagingInfo.TotalPages());track page;){
+
+                @if(page === pagingInfo.currentPage){
+                <button class="btn btn-outline-dark btn-primary" (click)="changePage(page)">{{page}}</button>
+                }
+                @else{
+                <button class="btn btn-outline-dark" (click)="changePage(page)">{{page}}</button>
+                }
+            }
+        </div>
+    </section>
+</div>

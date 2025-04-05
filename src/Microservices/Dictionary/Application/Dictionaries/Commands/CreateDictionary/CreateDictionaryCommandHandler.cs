@@ -25,7 +25,7 @@ namespace Application.Dictionaries.Commands.CreateDictionary
                 request.Description,
                 (Language)request.WordLanguage,
                 (Language)request.TranslationLanguage,
-                (DateTime)request.CreatedAt);
+                (DateTime)request.LastViewedAt);
 
             await dictionaryRepository.CreateAsync(dictionary);
 

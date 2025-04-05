@@ -13,10 +13,9 @@ namespace Persistence.Repositories
             return dbSet.Where(x=>x.UserId == userId).ToList();
         }
 
-        public async Task<Dictionary> GetDictionaryWithWordsAndTranslations(Guid dictionaryId) {
+        public async Task<Dictionary> GetDictionaryWithRows(Guid dictionaryId) {
             return await dbSet
-                .Include(x => x.Words.OrderBy(x => x.CreatedAt))
-                .ThenInclude(x => x.Translation)
+                .Include(x => x.DictionaryRows)
                 .FirstOrDefaultAsync(x => x.Id == dictionaryId);
         }
     }

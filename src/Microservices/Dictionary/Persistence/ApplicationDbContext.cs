@@ -10,8 +10,7 @@ namespace Persistence
         }
 
         public DbSet<Dictionary> Dictionaries { get; set; }
-        public DbSet<Word> Words { get; set; }
-        public DbSet<Translation> Translations { get; set; }
+        public DbSet<DictionaryRow> Words { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);

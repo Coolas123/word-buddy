@@ -1,0 +1,56 @@
+<div class="container-fluid">
+    <section class="row p-2">
+        <div class="col-2 d-flex flex-column align-items-end">
+            <div class="col nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="btn btn-outline-secondary active m-1" id="v-pills-profile-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
+                    aria-selected="true">Общие</button>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel"
+                    aria-labelledby="v-pills-profile-tab">
+                    <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
+                        <div class="form-group">
+                            @for (control of formGroup.userSettingsControls; track control){
+                            <label>{{control.label}}</label>
+
+                            @if(control.modelProperty == "Country"){
+                            <select name="{{control.modelProperty}}" formControlName="{{control.modelProperty}}"
+                                class="form-select">
+
+                                @for(key of getCountries(); track key){
+                                <option [ngValue]="countries[key]">{{key}}</option>
+                                }
+                                <option [value]="newSettings.Country" selected>{{newSettings.Country}}</option>
+                            </select>
+                            }
+                            @else{
+                            <input class="form-control" name="{{control.modelProperty}}"
+                                formControlName="{{control.modelProperty}}" />
+
+                            @if((formSubmitted || control.dirty) && control.invalid){
+                            <ul class="text-danger">
+                                @for(error of control.getValidationMessages(); track error){
+                                <li>
+                                    {{error}}
+                                </li>
+                                }
+                            </ul>
+                            }
+                            }
+                            }
+                            <button type="submit" class="btn btn-success mt-2" routerLink="/users/register"
+                                [disabled]="formSubmitted && formGroup.invalid || formSubmitted || settingsChanged()"
+                                [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                                Изменить настройки
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

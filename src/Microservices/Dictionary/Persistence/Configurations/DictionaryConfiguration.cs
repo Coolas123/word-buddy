@@ -42,7 +42,7 @@ namespace Persistence.Configurations
                 .HasColumnName("user_id");
 
             builder
-                .HasMany(x => x.Words)
+                .HasMany(x => x.DictionaryRows)
                 .WithOne()
                 .HasForeignKey(x => x.DictionaryId);
         }

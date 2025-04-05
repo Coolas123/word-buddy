@@ -19,16 +19,15 @@ namespace Application.Users.Commands.ChangeSettings
                 .MaximumLength(64)
                 .WithMessage("Почта не должна превышать 64 символа");
 
-            RuleFor(x => x.Password)
-                .Cascade(CascadeMode.Stop)
-                .MaximumLength(32)
-                .WithMessage("Пароль не должен превышать 32 символа")
+            When(user => !string.IsNullOrWhiteSpace(user.Password), () => {
+                RuleFor(x => x.Password)
                 .MinimumLength(6)
                 .WithMessage("Пароль должен содержать минимум 6 символов")
-                .Matches(@"((?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!]).{6,20})")
-                .WithMessage("Пароль должен содержать: Латинскую букву в нижнем и верхнем регистре, одна цифра, спецсимвол @#$%!");
+                .MaximumLength(32)
+                .WithMessage("Пароль не должен превышать 32 символа");
+            });
 
-            When(user => !string.IsNullOrEmpty(user.Password), () => {
+            When(user => !string.IsNullOrEmpty(user.Password) || !string.IsNullOrEmpty(user.ConfirmPassword), () => {
                 RuleFor(user => user.ConfirmPassword)
                 .Cascade(CascadeMode.Stop)
                .Equal(x => x.Password)

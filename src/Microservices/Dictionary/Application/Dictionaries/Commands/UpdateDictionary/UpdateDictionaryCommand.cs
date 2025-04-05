@@ -6,6 +6,8 @@ namespace Application.Dictionaries.Commands.UpdateDictionary
 {
     public sealed class UpdateDictionaryCommand : ICommand
     {
+        public Guid? UserId { get; set; }
+        public Guid? Id { get; set; }
         [Display(Name = "Заголовок")]
         public string? Title { get; set; }
         [Display(Name = "Описание словаря")]
@@ -15,7 +17,5 @@ namespace Application.Dictionaries.Commands.UpdateDictionary
         [Display(Name = "Язык перевода")]
         public Language? TranslationLanguage { get; set; }
         public DateTime? LastViewedAt { get; set; }
-        public Guid? UserId { get; set; }
-        public Guid? DictionaryId { get; set; }
     }
 }

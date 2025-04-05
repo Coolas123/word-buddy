@@ -11,8 +11,8 @@ namespace Domain.Entities
         public Language WordLanguage {  get; private set; }
         public Language TranslationLanguage {  get; private set; }
         public DateTime LastViewedAt { get; init; }
-        private List<Word> _words = new();
-        public IReadOnlyCollection<Word> Words => _words;
+        private List<DictionaryRow> _dictionaryRows = new();
+        public IReadOnlyCollection<DictionaryRow> DictionaryRows => _dictionaryRows;
 
         public Dictionary(
             Guid id,

@@ -1,6 +1,5 @@
 ﻿using Application.Users.Commands.RegisterUser;
 using Application.Users.Queries.LoginUser;
-using Domain.Repositories;
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,41 +20,54 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Авторизация пользователя
+        /// User authorization
         /// </summary>
-        /// <param name="model">Модель логина</param>
-        /// <returns>возвращает массив ValidationResult</returns>
-        /// <response code="200">Пользователь авторизован</response>
-        /// <response code="400">Неверно введенные данные</response>
+        /// <param name="model">Email and password model</param>
+        /// <returns>Returns a success message or a list of errors</returns>
+        /// <response code="200">The authorization was successful. Returns a success flag, jwt token and a success of operation message/response>
+        /// <response code="400">The request was a failure. Returns a success flag and a list of errors</response>
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> PostLogin([FromBody]LoginUserQuery model) {
             var token = await sender.Send(model);
             if (token.IsSuccess) {
                 HttpContext.Response.Cookies.Append("token", token.Value());
-                return StatusCode(200, token.Value());
+                return StatusCode(200, new {
+                    success = true,
+                    jwt = token.Value(),
+                    message = "Авторизация прошла успешно!"
+                });
             }
             else {
                 var validationResult = (IValidationResult)token;
 
-                return StatusCode(400, validationResult.Errors);
+                return StatusCode(400, new
+                {
+                    success = false,
+                    errors = validationResult.Errors
+                });
             }
         }
 
         /// <summary>
-        /// Регистрация нового пользователя
+        /// Registration a new user
         /// </summary>
-        /// <param name="model">Моедль регистрации</param>
-        /// <returns>Сообщение успешности создания</returns>
-        /// <response code="201">Пользователь создан</response>
-        /// <response code="400">Неверные данные для создания пользователя</response>
+        /// <param name="model">Registration model</param>
+        /// <returns>Returns a success message or a list of errors</returns>
+        /// <response code="201">The registration was successful. Returns a success flag, jwt token and a success of operation message</response>
+        /// <response code="400">The request was a failure. Returns a list of errors</response>
         [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> PostRegistration([FromBody]RegisterUserCommand model) {
             var token = await sender.Send(model);
             if (token.IsSuccess) {
                 HttpContext.Response.Cookies.Append("token", token.Value());
-                return StatusCode(201,"Регистрация прошла успешно!");
+                return StatusCode(201, new
+                {
+                    success = true,
+                    jwt = token.Value(),
+                    message = "Регистрация прошла успешно!"
+                });
             }
             else {
                 var validationResult = (IValidationResult)token;
@@ -65,10 +77,10 @@ namespace Presentation.Controllers
         }
 
         /// <summary>
-        /// Удаление JWT токена из куки
+        /// Logout
         /// </summary>
-        /// <returns>Код состояния</returns>
-        /// <response code="200">Токен успешно удален</response>
+        /// <returns>Returns a http status code</returns>
+        /// <response code="200">The jwt token was deleted from cookie</response>
         [HttpGet("LogOut")]
         [Authorize]
         public IActionResult LogOut() {

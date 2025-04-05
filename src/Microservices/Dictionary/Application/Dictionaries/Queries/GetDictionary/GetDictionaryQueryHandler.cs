@@ -13,7 +13,7 @@ namespace Application.Dictionaries.Queries.GetDictionary
             this.dictionaryRepository = dictionaryRepository;
         }
         public async Task<Result<Dictionary>> Handle(GetDictionaryQuery request, CancellationToken cancellationToken) {
-            var dictionary = await dictionaryRepository.GetDictionaryWithWordsAndTranslations(request.DictionaryId);
+            var dictionary = await dictionaryRepository.GetDictionaryWithRows(request.DictionaryId);
 
             if(dictionary != null) {
                 return Result.Success(dictionary);

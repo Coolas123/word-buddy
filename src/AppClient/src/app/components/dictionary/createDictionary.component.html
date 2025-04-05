@@ -1,0 +1,126 @@
+<div class="container-fluid">
+    <section class="justify-content-center border bg-opacity-10 rounded p-2">
+
+        <header class="text-center">
+            <h2>Создание словаря</h2>
+        </header>
+        <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
+                <div>
+                    <button type="submit" class="btn btn-success"
+                    [disabled]="formSubmitted && formGroup.invalid || formSubmitted"
+                    [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                    Создать
+                </button>
+                </div>
+                @for (control of formGroup.createDictionaryControls; track $index; let i = $index){
+                @if(control.modelProperty==="Title"){
+                <label>{{control.label}}</label>
+                <input class="form-control" name="{{control.modelProperty}}" formControlName="{{control.modelProperty}}" />
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+                @else if(control.modelProperty==="Description"){
+                <label>{{control.label}}</label>
+                <textarea style="resize: none;" rows="4" class="form-control" asp-for="CreateDictionaryCommand.Description"
+                    placeholder="Введите описание словаря" name="{{control.modelProperty}}"
+                    formControlName="{{control.modelProperty}}"></textarea>
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+                @else if(control.modelProperty==="Description"){
+                <div class="form-inline">
+                    <label>{{control.label}}</label>
+                    <label class="float-end">{{formGroup.createDictionaryControls[i+1].label}}</label>
+                </div>
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                }
+                @else if(control.modelProperty === "WordLanguage"){
+                <div class="input-group">
+                    <select class="form-select" name="{{control.modelProperty}}"
+                        formControlName="{{control.modelProperty}}">
+                        @for(key of getLanguage(); track key){
+                        <option [ngValue]="languages[key]">{{key}}</option>
+                        }
+                        <option value="" disabled selected>выберите язык</option>
+                    </select>
+    
+                    <select class="form-select" name="{{formGroup.createDictionaryControls[i+1].modelProperty}}"
+                        formControlName="{{formGroup.createDictionaryControls[i+1].modelProperty}}">
+                        @for(key of getLanguage(); track key){
+                        <option [ngValue]="languages[key]">{{key}}</option>
+                        }
+                        <option value="" disabled selected>выберите язык</option>
+                    </select>
+                    
+                </div>
+                @if((formSubmitted || control.dirty) && control.invalid){
+                <ul class="text-danger">
+                    @for(error of control.getValidationMessages(); track error){
+                    <li>
+                        {{error}}
+                    </li>
+                    }
+                </ul>
+                }
+                <hr />
+                }
+                }
+                <div formArrayName="Rows">
+                    @for (row of getRows().controls; track row; let i=$index){
+                        <div class="input-group bg-opacity-10 border border-secondary-subtle rounded" 
+                        [formGroupName]="i">
+                            <input class="form-control" 
+                            formControlName="Word"
+                            (ngModelChange)="this.inputSubject.next($event)"/>
+                            @if((formSubmitted || row.controls["Word"].dirty) && row.controls["Word"].invalid){
+                                
+                                <ul class="text-danger">
+                                    @for(error of getControl(row.controls["Word"]).getValidationMessages(); track error){
+                                    <li>
+                                        {{error}}
+                                    </li>
+                                    }
+                                </ul>
+                                }
+    
+                            <input class="form-control"
+                            formControlName="Translation" 
+                            (ngModelChange)="this.inputSubject.next($event)"/>
+                            @if((formSubmitted || row.controls["Translation"].dirty) && row.controls["Translation"].invalid){
+                                <ul class="text-danger">
+                                    @for(error of getControl(row.controls["Translation"]).getValidationMessages(); track error){
+                                    <li>
+                                        {{error}}
+                                    </li>
+                                    }
+                                </ul>
+                                }
+                        </div>
+                        
+                    }
+                </div>
+        </form>
+    </section>
+</div>

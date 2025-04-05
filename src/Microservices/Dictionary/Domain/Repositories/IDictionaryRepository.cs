@@ -6,6 +6,6 @@ namespace Domain.Repositories
     public interface IDictionaryRepository : IBaseRepository<Dictionary>
     {
         IEnumerable<Dictionary> GetDictionariesByUserId(Guid userId);
-        Task<Dictionary> GetDictionaryWithWordsAndTranslations(Guid dictionaryId);
+        Task<Dictionary> GetDictionaryWithRows(Guid dictionaryId);
     }
 }

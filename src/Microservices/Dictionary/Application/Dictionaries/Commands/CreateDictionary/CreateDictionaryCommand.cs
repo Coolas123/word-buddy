@@ -15,7 +15,7 @@ namespace Application.Dictionaries.Commands.CreateDictionary
         [Display(Name = "Язык перевода")]
         public Language? TranslationLanguage { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? LastViewedAt { get; set; }
 
         public Guid UserId { get; set; }
     }

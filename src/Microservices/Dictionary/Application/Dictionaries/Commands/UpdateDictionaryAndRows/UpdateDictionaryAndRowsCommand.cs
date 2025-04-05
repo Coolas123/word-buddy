@@ -1,14 +1,14 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.Dictionaries.Commands.UpdateDictionary;
-using Application.Words.Commands.CreateWord;
-using Application.Words.Commands.UpdateWord.UpdateWords;
+using Application.DictionaryRow.Commands.CreateWord;
+using Application.DictionaryRow.Commands.UpdateWord.UpdateWords;
 
 namespace Application.Dictionaries.Commands.UpdateDictionaryAndRows
 {
     public sealed class UpdateDictionaryAndRowsCommand : ICommand
     {
-        public UpdateWordsCommand? UpdateWordsCommand { get; set; }
-        public CreateWordsCommand? CreateWordsCommand { get; set; } = new();
-        public UpdateDictionaryCommand? UpdateDictionaryCommand { get; set; }
+        public UpdateDictionaryRowsCommand UpdateDictionaryRowsCommand { get; set; } = null!;
+        public CreateDictionaryRowsCommand CreateDictionaryRowsCommand { get; set; } = null!;
+        public UpdateDictionaryCommand UpdateDictionaryCommand { get; set; } = null!;
     }
 }
