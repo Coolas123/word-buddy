@@ -1,11 +1,8 @@
 ﻿using Application.Dictionaries.Commands.CreateDictionaryRow;
-using Application.Dictionaries.Commands.UpdateDictionary;
 using Application.Dictionaries.Commands.UpdateDictionaryAndRows;
 using Application.Dictionaries.Queries.GetDictionaries;
 using Application.Dictionaries.Queries.GetDictionary;
-using Application.DictionaryRow.Commands.CreateWord;
 using Application.DictionaryRow.Commands.UpdateWord;
-using Application.DictionaryRow.Commands.UpdateWord.UpdateWords;
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -86,10 +83,10 @@ namespace Presentation.Controllers
             var dictionaryResult = await sender.Send(new GetDictionaryQuery { DictionaryId= Guid.Parse(id) });
 
             if (dictionaryResult.IsSuccess) {
-                var viewWords = new List<UpdateDictionaryRowCommand>(dictionaryResult.Value().DictionaryRows.Count);
+                var viewRows = new List<UpdateDictionaryRowCommand>(dictionaryResult.Value().DictionaryRows.Count);
 
                 foreach (var word in dictionaryResult.Value().DictionaryRows) {
-                    viewWords.Add(new UpdateDictionaryRowCommand
+                    viewRows.Add(new UpdateDictionaryRowCommand
                     {
                         Id = word.Id,
                         WordText = word.WordText,
@@ -99,28 +96,7 @@ namespace Presentation.Controllers
                     });
                 }
 
-                return StatusCode(200, new UpdateDictionaryAndRowsCommand
-                {
-                    UpdateDictionaryCommand = new UpdateDictionaryCommand
-                    {
-                        Title = dictionaryResult.Value().Title,
-                        Description = dictionaryResult.Value().Description,
-                        LastViewedAt = dictionaryResult.Value().LastViewedAt,
-                        WordLanguage = dictionaryResult.Value().WordLanguage,
-                        TranslationLanguage = dictionaryResult.Value().TranslationLanguage,
-                        Id = dictionaryResult.Value().Id
-                    },
-                    UpdateDictionaryRowsCommand = new UpdateDictionaryRowsCommand
-                    {
-                        DictionaryRows = viewWords,
-                        DictionaryId = dictionaryResult.Value().Id
-                    },
-                    CreateDictionaryRowsCommand = new CreateDictionaryRowsCommand
-                    {
-                        DictionaryId = dictionaryResult.Value().Id,
-                        DictionaryRows = new()
-                    }
-                });
+                return StatusCode(200, UpdateDictionaryAndRowsCommand.Create(dictionaryResult.Value(),viewRows));
             }
 
             return StatusCode(400,"Не удалось найти словарь");
