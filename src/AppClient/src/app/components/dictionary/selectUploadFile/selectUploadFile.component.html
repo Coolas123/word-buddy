@@ -1,0 +1,150 @@
+<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#selectUploadFile">
+    Загрузить слова из файла
+</button>
+
+<div class="modal" id="selectUploadFile" aria-labelledby="selectUploadFile" data-backdrop="false" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Выбор файла</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="form1" novalidate [formGroup]="formGroup" (ngSubmit)="selectUploadFileSubmitForm()">
+                    @for (control of formGroup.getSelectUploadFileControls; track $index; let i = $index){
+                    @if(control.modelProperty==="WordSeparator"){
+                    <label>{{control.label}}</label>
+                    <input class="form-control" name="{{control.modelProperty}}"
+                        formControlName="{{control.modelProperty}}" />
+
+                    @if((formSubmitted || control.dirty) && control.invalid){
+                    <ul class="text-danger">
+                        @for(error of control.getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+                }
+                    @else if(control.modelProperty==="LineSeparator"){
+                        <div class="form-check">
+                            <input (change)="showFormControl(control)" checked #defaultWordSeparator type="radio" class="form-check-input" name="selectLineSeparator" id="inputLineSeparatorDefault">
+                            <label class="form-check-label" for="inputLineSeparatorDefault">{{control.label}}</label>
+                        </div>
+                        <div class="form-check">
+                            <input (change)="showFormControl(control)" type="radio" class="form-check-input" name="selectLineSeparator" id="inputLineSeparatorCustom">
+                            <label class="form-check-label" for="inputLineSeparatorCustom">{{control.label}}</label>
+                        </div>
+                        
+                        <label>{{control.label}}</label>
+                            <input class="form-control" name="{{control.modelProperty}}"
+                                formControlName="{{control.modelProperty}}" >
+                                @if((formSubmitted || control.dirty) && control.invalid){
+                                    <ul class="text-danger">
+                                        @for(error of control.getValidationMessages(); track error){
+                                        <li>
+                                            {{error}}
+                                        </li>
+                                        }
+                                    </ul>
+                                    }
+                    }
+                    @else if(control.modelProperty==="File"){
+                        <label for="selectFile">Выбрать файл</label>
+                    <input (change)="selectUploadFile($event)" class="btn-secondary" id="selectFile"
+                        class="form-control" type="file" accept=".txt"
+                        name="{{control.modelProperty}}"
+                        formControlName="{{control.modelProperty}}">
+
+                        @if((formSubmitted || control.dirty) && control.invalid){
+                            <ul class="text-danger">
+                                @for(error of control.getValidationMessages(); track error){
+                                <li>
+                                    {{error}}
+                                </li>
+                                }
+                            </ul>
+                            }
+                    }
+                    }
+
+                    <p>Предварительный просмотр:</p>
+
+                    <div>
+                        <table class="m-0 table table-borderless">
+                            <thead>
+
+                            </thead>
+                            <tbody formArrayName="NewDictionaryRows">
+                                @for (row of getNewRows().controls; track row; let i=$index){
+                                <tr [formGroupName]="i" class="border border-secondary-subtle">
+
+                                    <td class="p-0">
+                                        <input class="rounded-0 border-0 border-end form-control" formControlName="NewWord"/>
+
+                                        @if(row.controls["NewWord"] != undefined && (formSubmitted ||
+                                        row.controls["NewWord"].dirty) &&
+                                        row.controls["NewWord"].invalid){
+
+                                        <ul class="text-danger">
+                                            @for(error of getControl(row.controls["NewWord"]).getValidationMessages();
+                                            track
+                                            error){
+                                            <li>
+                                                {{error}}
+                                            </li>
+                                            }
+                                        </ul>
+                                        }
+                                    </td>
+
+                                    <td class="p-0">
+                                        <input class="rounded-0 border-0 form-control" formControlName="NewTranslation">
+
+                                        @if(row.controls["NewTranslation"] != undefined && (formSubmitted ||
+                                        row.controls["NewTranslation"].dirty) &&
+                                        row.controls["NewTranslation"].invalid){
+                                        <ul class="text-danger">
+                                            @for(error of
+                                            getControl(row.controls["NewTranslation"]).getValidationMessages(); track
+                                            error){
+                                            <li>
+                                                {{error}}
+                                            </li>
+                                            }
+                                        </ul>
+                                        }
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button id="closeModalButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button form="form1" type="submit" class="btn btn-primary"
+                    [disabled]="formSubmitted && formGroup.invalid"
+                    [class.btn-secondary]="formSubmitted && formGroup.invalid">Загрузить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    input:focus, select:focus {
+        box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.5),
+            0px 2px 4px rgba(0, 0, 0, 0.1),
+            0px 4px 8px rgba(0, 0, 0, 0.1),
+            0px 8px 16px rgba(0, 0, 0, 0.1);
+    }
+</style>

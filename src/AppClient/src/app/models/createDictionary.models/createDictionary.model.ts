@@ -12,7 +12,6 @@ class CreateDictionaryRowCommand {
 class CreateDictionaryRowsCommand {
     constructor(
         public DictionaryRows?: CreateDictionaryRowCommand[],
-        //public DictionaryId?: string
     ) { }
 }
 
@@ -33,17 +32,17 @@ export class CreateDictionaryAndRowsCommand{
 
     static create(newDictionary:any){
         let createRows = new CreateDictionaryRowsCommand([])
-
+        console.log( newDictionary.Rows)
         for(let i=0; i< newDictionary.Rows.length; i++){
             if(!newDictionary.Rows[i].Word || !newDictionary.Rows[i].Translation) continue
             
             createRows.DictionaryRows?.push(new CreateDictionaryRowCommand(
                 newDictionary.Rows[i].Word,
-                LearnStatus.NotStudied,
+                newDictionary.Rows[i].LearnStatus,
                 newDictionary.Rows[i].Translation
             ))
         }
-
+        
         return new CreateDictionaryAndRowsCommand(createRows, new CreateDictionaryCommand(
             newDictionary.WordLanguage,
             newDictionary.TranslationLanguage,

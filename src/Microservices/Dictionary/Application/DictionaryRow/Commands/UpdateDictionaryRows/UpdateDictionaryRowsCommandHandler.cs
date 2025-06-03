@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Messaging;
 using Domain.Repositories;
 using Domain.Shared;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Application.DictionaryRow.Commands.UpdateWord.UpdateWords
 {
@@ -18,16 +19,23 @@ namespace Application.DictionaryRow.Commands.UpdateWord.UpdateWords
         public async Task<Result> Handle(UpdateDictionaryRowsCommand request, CancellationToken cancellationToken)
         {
             var updateWords = new List<Domain.Entities.DictionaryRow>(request.DictionaryRows.Count());
-            foreach(var row in request.DictionaryRows) {
+            var imPathBase = @"../Application/img/";
+            foreach (var row in request.DictionaryRows) {
+                if (!string.IsNullOrEmpty(row.ImgBase64)) {
+                    var r = row.ImgBase64.Remove(0, row.ImgBase64.IndexOf(',') + 1);
+                    byte[] bytes = Convert.FromBase64String(row.ImgBase64);
+                    File.WriteAllBytes(imPathBase + row.Id, bytes);
+                }
                 updateWords.Add(Domain.Entities.DictionaryRow.Create(
                     row.Id,
                     request.DictionaryId,
                     row.WordText,
                     row.LearnStatus,
                     row.LearnStatusChangedAt,
-                    row.CreatedAt,
                     row.WordTranslation,
-                    row.WordContexts));
+                    row.WordContexts,
+                    string.IsNullOrEmpty(row.ImgBase64) ? null: imPathBase + row.Id,
+                    row.NoteText));
             }
 
             wordRepository.UpdateRange(updateWords);

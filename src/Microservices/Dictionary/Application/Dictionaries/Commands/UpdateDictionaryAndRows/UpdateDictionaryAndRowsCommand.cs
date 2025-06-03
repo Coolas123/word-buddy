@@ -13,17 +13,26 @@ namespace Application.Dictionaries.Commands.UpdateDictionaryAndRows
         public CreateDictionaryRowsCommand CreateDictionaryRowsCommand { get; set; } = null!;
         public UpdateDictionaryCommand UpdateDictionaryCommand { get; set; } = null!;
 
-        public static UpdateDictionaryAndRowsCommand Create(Dictionary dictionary, List<UpdateDictionaryRowCommand> viewRows) {
+        public static UpdateDictionaryAndRowsCommand Create(Dictionary dictionary) {
             var viewWords = new List<UpdateDictionaryRowCommand>(dictionary.DictionaryRows.Count);
 
             foreach (var word in dictionary.DictionaryRows) {
+                var imPathBase = @"../Application/img/";
+                byte[] imgByte = null;
+                if (!string.IsNullOrEmpty(word.ImgPath)) {
+                    imgByte = File.ReadAllBytes(imPathBase + word.Id);
+                }
                 viewWords.Add(new UpdateDictionaryRowCommand
                 {
                     Id = word.Id,
                     WordText = word.WordText,
                     LearnStatus = word.LearnStatus,
                     LearnStatusChangedAt = word.LearnStatusChangedAt,
-                    WordTranslation = word.WordTranslation
+                    WordTranslation = word.WordTranslation,
+                    WordContexts = word.WordContexts,
+                    ImgBase64 = imgByte == null ? "" : Convert.ToBase64String(imgByte),
+                    NoteText = word.NoteText,
+
                 });
             }
 

@@ -109,16 +109,7 @@ namespace User.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailUniqueCheck, EmailUniqueCheck>();
-
-            var section = configuration.GetSection("RabbitServer");
-            ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
-            {
-                IsDegub = section.GetValue<bool>("IsDegub"),
-                ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
-                Configurator = bus => {
-                    bus.AddRequestClient<DictionariesRequest>();
-                }
-            });
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

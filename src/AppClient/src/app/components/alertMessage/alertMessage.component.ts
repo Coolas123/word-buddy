@@ -1,4 +1,4 @@
-import { Component } from "@angular/core"
+import { Component, OnDestroy } from "@angular/core"
 import { MessageService } from "../../models/alertMessage.models/alertMessage.service"
 import { Message } from "../../models/alertMessage.models/message.model";
 import { Router, NavigationEnd, NavigationCancel } from "@angular/router";
@@ -16,17 +16,23 @@ export class AlertMessageComponent {
 
     constructor(private messageService: MessageService, router: Router) {
         this.messageService.messages.subscribe(message => this.lastMessage = message)
-        
-        router.events.pipe(filter((e: any) => e instanceof NavigationEnd || e instanceof NavigationCancel))
-            .subscribe(e => { 
+
+        router.events.subscribe(e =>{ 
+            if (e instanceof NavigationEnd || e instanceof NavigationCancel){
                 this.lastMessage = null
                 this.isClosed = false
+            }
             });
     }
 
     closeBtn=() => {
-        this.isClosed=true
+        // this.isClosed=true
         this.lastMessage = null
-        this.isClosed=false
+        // this.isClosed=false
+        this.messageService.clearMessages()
+        //this.messageService.messages.unsubscribe()
+        // console.log(this.lastMessage)
+        //this.messageService.messages.subscribe(message => this.lastMessage = message)
+        // console.log(this.lastMessage)
     }
 }

@@ -48,9 +48,9 @@ namespace Presentation.Controllers
         /// <returns>Returns a success message or a list of errors</returns>
         /// <response code="200">The request was successful. Returns a success message</response>
         /// <response code="400">The request was a failure. Returns a list of errors</response>
-        [HttpPut]
+        [HttpPatch]
         [Authorize]
-        public async Task<IActionResult> Put([FromBody]ChangeUserSettingsCommand model) {
+        public async Task<IActionResult> Patch([FromBody]ChangeUserSettingsCommand model) {
             model.UserId = Guid.Parse(User.FindFirstValue("Id"));
 
             var result = await sender.Send(model);

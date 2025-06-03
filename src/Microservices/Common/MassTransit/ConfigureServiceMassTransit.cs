@@ -31,7 +31,8 @@ namespace MassTransit.Contracts
                         configurator.Username("guest");
                         configurator.Password("guest");
                     });
-
+                    busFactory.ClearSerialization();
+                    busFactory.UseRawJsonSerializer();
                     busFactory.ConfigureEndpoints(busContext);
                 });
                 massTransitConfiguration.Configurator(x);

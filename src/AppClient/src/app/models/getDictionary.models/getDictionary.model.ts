@@ -1,24 +1,43 @@
 import { Language } from "../../enums/language"
 import { LearnStatus } from "../../enums/learnStatus"
+import { WordContexsts } from "./wordContext"
 
 export class UpdateDictionaryAndRowsCommand {
     constructor(
         public UpdateDictionaryCommand?: UpdateDictionaryCommand,
         public UpdateDictionaryRowsCommand?: UpdateDictionaryRowsCommand,
         public CreateDictionaryRowsCommand?: CreateDictionaryRowsCommand
-    ) { }
+    ) {}
 
-    Update(formDictionary: any) {
-        this.UpdateDictionaryCommand!.Title = formDictionary.Title,
-            this.UpdateDictionaryCommand!.Description = formDictionary.Description
-        this.UpdateDictionaryCommand!.TranslationLanguage = formDictionary.TranslationLanguage
-        this.UpdateDictionaryCommand!.WordLanguage = formDictionary.WordLanguage
+    static Update(newDictionary:UpdateDictionaryAndRowsCommand,formDictionary: any){
+        newDictionary.UpdateDictionaryCommand!.Title = formDictionary.Title,
+        newDictionary.UpdateDictionaryCommand!.Description = formDictionary.Description
+        newDictionary.UpdateDictionaryCommand!.TranslationLanguage = formDictionary.TranslationLanguage
+        newDictionary.UpdateDictionaryCommand!.WordLanguage = formDictionary.WordLanguage
 
-        this.UpdateDictionaryRowsCommand!.DictionaryRows.forEach((value, index) => {
-            value.WordText = formDictionary.Rows[index].Word
-            value.WordTranslation = formDictionary.Rows[index].Translation
-            value.LearnStatus = formDictionary.Rows[index].LearnStatus
+        newDictionary.UpdateDictionaryRowsCommand?.DictionaryRows.forEach((value, index) => {
+            value.WordText = formDictionary.DictionaryRows[index].WordText
+            value.WordTranslation = formDictionary.DictionaryRows[index].WordTranslation
+            value.LearnStatus = formDictionary.DictionaryRows[index].LearnStatus
+            value.WordContexts = formDictionary.DictionaryRows[index].WordContexts.filter((x:WordContexsts)=>x.IsForSave).map((x:WordContexsts)=>x.Text)??[]
+            value.ImgBase64 = formDictionary.DictionaryRows[index].ImgBase64
+            value.NoteText = formDictionary.DictionaryRows[index].NoteText
+            value.LearnStatusChangedAt = formDictionary.DictionaryRows[index].LearnStatusChangedAt
         })
+        
+        let createRows:CreateDictionaryRowCommand[] = []
+        formDictionary.NewDictionaryRows.forEach((value:any) => {
+            if(!value.NewWord || !value.NewTranslation) return
+                    createRows.push(new CreateDictionaryRowCommand(
+                        value.NewWord,
+                        value.LearnStatus,
+                        value.NewTranslation,
+                        value.WordContexts?.filter((x:WordContexsts)=>x.IsForSave).map((x:WordContexsts)=>x.Text),
+                        value.ImgBase64,
+                        value.NoteText
+                    ))
+        });
+        newDictionary.CreateDictionaryRowsCommand!.DictionaryRows = createRows
     }
 }
 
@@ -33,14 +52,14 @@ class UpdateDictionaryCommand {
     ) { }
 }
 
-class UpdateDictionaryRowsCommand {
+export class UpdateDictionaryRowsCommand {
     constructor(
         public DictionaryRows: UpdateDictionaryRowCommand[],
         public DictionaryId?: string
     ) { }
 }
 
-class UpdateDictionaryRowCommand {
+export class UpdateDictionaryRowCommand {
     constructor(
         public Id: string,
         public WordText: string,
@@ -48,7 +67,10 @@ class UpdateDictionaryRowCommand {
         public LearnStatusChangedAt: Date,
         public CreatedAt: Date,
         public WordTranslation: string,
-        public WordContext: string[]
+        public WordContexts: string[],
+        public ImgBase64? :string,
+        public ImgPath? :string,
+        public NoteText?: string
     ) { }
 }
 
@@ -63,6 +85,10 @@ class CreateDictionaryRowCommand {
     constructor(
         public WordText: string,
         public LearnStatus: LearnStatus,
-        public WordTranslation: string
+        public WordTranslation: string,
+        public WordContexts: string[],
+        public ImgBase64? : string,
+        public ImgPath? :string,
+        public NoteText?: string
     ) { }
 }

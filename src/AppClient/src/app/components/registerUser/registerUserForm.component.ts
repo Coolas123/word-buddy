@@ -1,5 +1,5 @@
 import { Component } from "@angular/core"
-import { Model } from "../../models/registerUser.models/repository.registerUser.model"
+import { Model } from "../../models/registerUser.models/repository.User.model"
 import { RegisterUser } from "../../models/registerUser.models/registerUser.model"
 import { FormsModule, ReactiveFormsModule } from "@angular/forms"
 import { registerUserFormGroup } from "../../models/registerUser.models/registerUserFrom.model"

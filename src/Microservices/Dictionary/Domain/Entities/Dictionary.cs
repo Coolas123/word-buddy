@@ -5,13 +5,14 @@ namespace Domain.Entities
 {
     public class Dictionary : Entity
     {
+        private List<DictionaryRow> _dictionaryRows = new();
         public Guid UserId { get; init; }
         public string Title { get; private set; }
         public string Description { get; private set; }
         public Language WordLanguage {  get; private set; }
         public Language TranslationLanguage {  get; private set; }
         public DateTime LastViewedAt { get; init; }
-        private List<DictionaryRow> _dictionaryRows = new();
+        public Guid? CardPlanId {  get; private set; }
         public IReadOnlyCollection<DictionaryRow> DictionaryRows => _dictionaryRows;
 
         public Dictionary(
@@ -29,6 +30,14 @@ namespace Domain.Entities
             WordLanguage = wordLanguage;
             TranslationLanguage = translationLanguage;
             LastViewedAt = lastViewedAt;
+        }
+
+        public void AddWordContextToWord(Guid dictionaryRowId, string wordContext) {
+            var r = _dictionaryRows.Where(x => x.DictionaryId == dictionaryRowId).Select(x => { x.AddWordContext(wordContext); return x; });
+        }
+
+        public void ChangeCardPlanId(Guid? cardPlanId) {
+            CardPlanId = cardPlanId;
         }
     }
 }

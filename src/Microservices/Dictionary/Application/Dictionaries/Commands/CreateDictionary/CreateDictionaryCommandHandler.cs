@@ -15,6 +15,7 @@ namespace Application.Dictionaries.Commands.CreateDictionary
             this.unitOfWork = unitOfWork;
             this.dictionaryRepository = dictionaryRepository;
         }
+
         public async Task<Result<Guid>> Handle(CreateDictionaryCommand request, CancellationToken cancellationToken) {
             var dictionaryGuid = Guid.NewGuid();
 

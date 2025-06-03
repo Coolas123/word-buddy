@@ -8,12 +8,16 @@ namespace Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<DictionaryRow> builder) {
             builder
-                .ToTable("word")
+                .ToTable("dictionary_row")
                 .HasKey(x=>x.Id);
 
             builder
                 .Property(x => x.Id)
                 .HasColumnName("id");
+
+            builder
+                .Property(x => x.DictionaryId)
+                .HasColumnName("dictionary_id");
 
             builder
                 .Property(x => x.WordText)
@@ -38,8 +42,21 @@ namespace Persistence.Configurations
                 .HasColumnName("word_contexts");
 
             builder
-                .Property(x => x.CreatedAt)
-                .HasColumnName("created_at");
+                .Property(x => x.NoteText)
+                .HasMaxLength(1024)
+                .HasColumnName("note_text");
+
+            builder
+                .Property(x => x.ImgPath)
+                .HasColumnName("img_path");
+
+            builder
+                .Property(x => x.LearnStatusChangedAt)
+                .HasColumnName("learn_status_changed_at");
+
+            builder
+               .Property(x => x.CardBoxLearnStatusChangedAt)
+               .HasColumnName("card_box_learn_status_changed_at");
         }
     }
 }

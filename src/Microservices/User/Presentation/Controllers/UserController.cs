@@ -1,10 +1,14 @@
-﻿using Application.Users.Commands.RegisterUser;
+﻿using Application.Subscriptions.Commands.CreateSubscription;
+using Application.Subscriptions.Commands.UpdateSubscription;
+using Application.Users.Commands.RegisterUser;
 using Application.Users.Queries.LoginUser;
+using Domain.Enums;
 using Domain.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -60,6 +64,15 @@ namespace Presentation.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PostRegistration([FromBody]RegisterUserCommand model) {
             var token = await sender.Send(model);
+
+            var sub = await sender.Send(new CreateSubscriptionCommand
+            {
+                UserId = Guid.Parse(User.FindFirstValue("Id")),
+                SubscriptionType = SubscriptionType.NotSubscribed,
+                SubscribedAt = null,
+                TokenLeft = 0
+            });
+
             if (token.IsSuccess) {
                 HttpContext.Response.Cookies.Append("token", token.Value());
                 return StatusCode(201, new
@@ -86,6 +99,38 @@ namespace Presentation.Controllers
         public IActionResult LogOut() {
             HttpContext.Response.Cookies.Delete("token");
             return StatusCode(200);
+        }
+
+        /// <summary>
+        /// Update subscription to trial
+        /// </summary>
+        /// <returns>Returns a success message or a list of errors</returns>
+        /// <response code="200">The request was successful. Returns a success message</response>
+        /// <response code="400">The request was a failure. Returns a list of errors</response>
+        [Authorize]
+        [HttpPatch("subscribeTrial")]
+        public async Task<IActionResult> PatchSubscribeTrial() {
+
+            var result = await sender.Send(new UpdateSubscriptionCommand{
+                UserId = Guid.Parse(User.FindFirstValue("Id")),
+                SubscriptionType = SubscriptionType.Trial,
+                SubscribedAt = DateTime.Now.ToUniversalTime(),
+                TokenLeft = 250_000
+            });
+
+            if (result.IsSuccess) {
+
+                return StatusCode(200, "Подписка оформлена");
+            }
+            else {
+                if (result is IValidationResult) {
+                    var r = (IValidationResult)result;
+                    return StatusCode(400, r.Errors);
+                }
+                else {
+                    return StatusCode(400, result.Error);
+                }
+            }
         }
     }
 }

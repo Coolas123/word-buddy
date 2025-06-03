@@ -1,0 +1,328 @@
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-2">
+        <div class="p-2">
+            <div class="d-grid gap-2 me-3 nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                <input name="cardPlanName" class="btn-check nav-tab" id="v-pills-createCardPlan-tab"
+                    data-bs-toggle="pill" data-bs-target="#v-pills-createCardPlan" role="tab"
+                    aria-controls="v-pills-createCardPlan" type="radio">
+                <label (click)="changeFormGroup(undefined)" class="btn btn-outline-success" for="v-pills-createCardPlan-tab">
+                    Создать новый план
+                </label>
+                <span class="fs-5">Созданные планы:</span>
+                @for(cardPlan of cardPlans; track cardPlan; let i = $index){
+                <input name="cardPlanName" class="btn-check nav-tab" id="v-pills-getCardPlan{{i}}-tab"
+                    data-bs-toggle="pill" [attr.data-bs-target]="'#v-pills-getCardPlan'+i" role="tab"
+                    [attr.aria-controls]="'v-pills-getCardPlan'+i" type="radio">
+                <label (click)="changeFormGroup(cardPlan)" class="btn btn-outline-secondary "
+                    for="v-pills-getCardPlan{{i}}-tab">
+                    {{cardPlan.Title}}
+                </label>
+                }
+                @if(cardPlans.length == 0){
+                <p class="fs-6">У вас пока нет созданных планов</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="tab-content pt-2">
+            <div class="p-2 tab-pane fade" id="v-pills-createCardPlan" role="tabpanel"
+                aria-labelledby="v-pills-createCardPlan-tab" tabindex="0">
+                <form [formGroup]="formGroup" novalidate (ngSubmit)="createCardPlanSubmitForm()">
+                    <label class="fs-5">{{formGroup.getControls[0].label}}</label>
+                    <input class="form-control" name="{{formGroup.getControls[0].modelProperty}}"
+                        formControlName="{{formGroup.getControls[0].modelProperty}}"
+                        placeholder="Введите название плана" />
+                    @if((formSubmitted || formGroup.getControls[0].dirty) && formGroup.getControls[0].invalid){
+                    <ul class="text-danger">
+                        @for(error of formGroup.getControls[0].getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+
+                    <label class="fs-5">{{formGroup.getControls[1].label}}</label>
+                    <textarea style="resize: none;" rows="4" class="form-control" placeholder="Введите описание плана"
+                        name="{{formGroup.getControls[1].modelProperty}}"
+                        formControlName="{{formGroup.getControls[1].modelProperty}}"></textarea>
+                    @if((formSubmitted || formGroup.getControls[1].dirty) && formGroup.getControls[1].invalid){
+                    <ul class="text-danger">
+                        @for(error of formGroup.getControls[1].getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+
+                    <p class="fs-5">Ниже выберите словари для повторения:</p>
+                    <table class="m-0 table table-borderless">
+                        <thead>
+
+                        </thead>
+                        <tbody>
+                            @for (dic of formGroup.value.StoredDictionariesId; track dic; let i=$index){
+                            <tr id="{{'row'+i}}" style="border: 1px solid red;">
+
+                                <td class="p-0 pt-1 text-center bg-danger" height="36" width="34">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-list bi-check2-square" viewBox="0 0 16 16">
+                                        <path
+                                            d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                                        <path
+                                            d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                                    </svg>
+                                </td>
+
+                                <td (click)="selecteDictionaryRows(i,$event,dic)" class="p-0">
+                                    <input style="cursor:pointer;" readonly [value]="dic.value.Title"
+                                        class="rounded-0 border-0 form-control">
+                                </td>
+                                <td class="p-0" style="width:1px; white-space:nowrap;">
+                                    <button class="p-auto btn border-0 rounded-0" type="button"
+                                        (click)="showWordContext('moreDetailsCollapse',i)">
+                                        Подробнее
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr style="display: none;" id="{{'moreDetailsCollapse'+i}}">
+                                <td colspan="3">
+                                    <span>Описание: {{dic.value.Description}}</span>
+                                    <br>
+                                    <small
+                                        class="text-body-secondary">Просмотрено:{{getFormatDate(dic.value.LastViewedAt!)}}</small>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3" style="background-color:rgb(230 230 230);"></td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <button type="submit" class="m-1 btn btn-success"
+                        [disabled]="formSubmitted && !formGroup.value.StoredDictionariesId.length"
+                        [class.btn-secondary]="formSubmitted && !formGroup.value.StoredDictionariesId.length">
+                        Создать план
+                    </button>
+                </form>
+            </div>
+
+            @for(cardPlan of cardPlans; track cardPlan; let i = $index){
+            <form [formGroup]="formGroup" novalidate (ngSubmit)="updateCardPlanSubmitForm()">
+
+                <div class="rounded  tab-pane fade border"
+                    [id]="'v-pills-getCardPlan'+i" role="tabpanel"
+                    [attr.aria-labelledby]="'v-pills-getCardPlan{{i}}-tab'" tabindex="0">
+
+                    <div class="text-end">
+                        <input (click)="changeEditMode(cardPlan)" class="btn-check" type="checkbox"
+                            id="selectWordsInput" data-bs-toggle="collapse" href="#editInputCollapse" role="button"
+                            aria-expanded="false" aria-controls="editInputCollapse">
+                        <label class="btn rounded-0 btn-outline-secondary border-secondary-subtle" for="selectWordsInput">Редактировать план</label>
+                    </div>
+
+                    @if(editMode){
+                    <label class="fs-5">{{formGroup.getControls[0].label}}</label>
+                    <input class="form-control" name="{{formGroup.getControls[0].modelProperty}}"
+                        formControlName="{{formGroup.getControls[0].modelProperty}}"
+                        placeholder="Введите название плана" value="{{formGroup.getControls[0].value}}">
+
+                    @if((formSubmitted || formGroup.getControls[0].dirty) && formGroup.getControls[0].invalid){
+                    <ul class="text-danger">
+                        @for(error of formGroup.getControls[0].getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+                    <label class="fs-5">{{formGroup.getControls[1].label}}</label>
+                    <textarea style="resize: none;" rows="4" class="form-control" placeholder="Введите описание плана"
+                        name="{{formGroup.getControls[1].modelProperty}}"
+                        formControlName="{{formGroup.getControls[1].modelProperty}}">{{formGroup.getControls[1].value}}</textarea>
+                    @if((formSubmitted || formGroup.getControls[1].dirty) && formGroup.getControls[1].invalid){
+                    <ul class="text-danger">
+                        @for(error of formGroup.getControls[1].getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
+                    }
+                    }
+                    @else{
+                    <div class="text-center">
+                        <p class="fs-3">{{cardPlan.Title}}</p>
+                        <p class="fs-5">{{cardPlan.Description}}</p>
+                    </div>
+                    }
+
+                    <div class="row row-cols-2 p-2">
+                        <div class="col p-2">
+                            <a class="ref1" (click)="redirectToCard(cardPlan, getCardBox(cardPlan,'NotStudied'))"
+                                style="text-decoration: none;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="fs-5 text-center">
+                                            {{getLearnStatusValue(getCardBox(cardPlan,"NotStudied")?.LearnStatus)}}
+                                        </p>
+                                        <p class="fs-5">Период повторения каждый
+                                            {{getCardBox(cardPlan,"NotStudied")?.Period}} день</p>
+                                        <p class="fs-5">Всего слов:
+                                            {{getCardBox(cardPlan,"NotStudied")?.TotalWords}}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small>Просмотрено:
+                                            {{getFormatDate(getCardBox(cardPlan,"NotStudied")?.ViewedAt!)}}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col p-2">
+                            <a class="ref1" (click)="redirectToCard(cardPlan, getCardBox(cardPlan,'InStudying'))"
+                                style="text-decoration: none;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="fs-5 text-center">
+                                            {{getLearnStatusValue(getCardBox(cardPlan,"InStudying")?.LearnStatus)}}
+                                        </p>
+                                        <p class="fs-5">Период повторения каждый
+                                            {{getCardBox(cardPlan,"InStudying")?.Period}} день</p>
+                                        <p class="fs-5">Всего слов:
+                                            {{getCardBox(cardPlan,"InStudying")?.TotalWords}}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small>Просмотрено:
+                                            {{getFormatDate(getCardBox(cardPlan,"InStudying")?.ViewedAt!)}}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col p-2">
+                            <a class="ref1" (click)="redirectToCard(cardPlan, getCardBox(cardPlan,'NeedToRemember'))"
+                                style="text-decoration: none;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="fs-5 text-center">
+                                            {{getLearnStatusValue(getCardBox(cardPlan,"NeedToRemember")?.LearnStatus)}}
+                                        </p>
+                                        <p class="fs-5">Период повторения каждый
+                                            {{getCardBox(cardPlan,"NeedToRemember")?.Period}} день</p>
+                                        <p class="fs-5">Всего слов:
+                                            {{getCardBox(cardPlan,"NeedToRemember")?.TotalWords}}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small>Просмотрено:
+                                            {{getFormatDate(getCardBox(cardPlan,"NeedToRemember")?.ViewedAt!)}}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col p-2">
+                            <a class="ref1" (click)="redirectToCard(cardPlan, getCardBox(cardPlan,'VeryDifficult'))"
+                                style="text-decoration: none;">
+                                <div class="card ref1">
+                                    <div class="card-body">
+                                        <p class="fs-5 text-center">
+                                            {{getLearnStatusValue(getCardBox(cardPlan,"VeryDifficult")?.LearnStatus)}}
+                                        </p>
+                                        <p class="fs-5">Период повторения на ваш выбор</p>
+                                        <p class="fs-5">Всего слов:
+                                            {{getCardBox(cardPlan,"VeryDifficult")?.TotalWords}}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small>Просмотрено:
+                                            {{getFormatDate(getCardBox(cardPlan,"VeryDifficult")?.ViewedAt!)}}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+
+                        <div class="collapse" id="editInputCollapse">
+                            <p class="fs-5">Ниже выберите словари для повторения:</p>
+                            <table class="m-0 table table-borderless">
+                                <thead>
+
+                                </thead>
+                                <tbody>
+                                    @for (dic of formGroup.value.StoredDictionariesId; track dic; let i=$index){
+                                    <tr id="{{'row'+i}}" [style.border]="dic.selected?'1px solid green':'1px solid red'">
+
+                                        <td class="p-0 pt-1 text-center" [class.bg-success]="dic.selected" [class.bg-danger]="!dic.selected" height="36" width="34">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                fill="currentColor" class="bi bi-list bi-check2-square"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                                                <path
+                                                    d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                                            </svg>
+                                        </td>
+
+                                        <td (click)="selecteDictionaryRows(i,$event,dic)" class="p-0">
+                                            <input style="cursor:pointer;" readonly [value]="dic.value.Title"
+                                                class="rounded-0 border-0 form-control">
+                                        </td>
+                                        <td class="p-0" style="width:1px; white-space:nowrap;">
+                                            <button class="p-auto btn border-0 rounded-0" type="button"
+                                                (click)="showWordContext('moreDetailsCollapse',i)">
+                                                Подробнее
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <tr style="display: none;" id="{{'moreDetailsCollapse'+i}}">
+                                        <td colspan="3">
+                                            <span>Описание: {{dic.value.Description}}</span>
+                                            <br>
+                                            <small
+                                                class="text-body-secondary">Просмотрено:{{getFormatDate(dic.value.LastViewedAt!)}}</small>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="3" style="background-color:rgb(230 230 230);"></td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                            <button type="submit" class="m-1 btn btn-success"
+                                [disabled]="formSubmitted && !formGroup.value.StoredDictionariesId.length"
+                                [class.btn-secondary]="formSubmitted && !formGroup.value.StoredDictionariesId.length">
+                                Сохранить изменения
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            }
+        </div>
+    </div>
+    <div class="col-2"></div>
+    <div class="col-1"></div>
+</div>
+<style>
+    input:focus,
+    select:focus {
+        box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.5),
+            0px 2px 4px rgba(0, 0, 0, 0.1),
+            0px 4px 8px rgba(0, 0, 0, 0.1),
+            0px 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .ref1:hover .card {
+        border-color: rgb(0 0 0);
+        cursor: pointer;
+    }
+</style>

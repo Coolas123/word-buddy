@@ -1,14 +1,10 @@
-import { inject, Injectable } from "@angular/core";
+import { inject } from "@angular/core";
 import { UserURLs } from "../common/gateways"
 import {
     ActivatedRouteSnapshot, RouterStateSnapshot,
     Router,
-    CanActivate,
     CanActivateFn,
-    GuardResult,
-    MaybeAsync
 } from "@angular/router";
-//import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
 
 export const AuthGuard: CanActivateFn = (

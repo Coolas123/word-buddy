@@ -6,12 +6,11 @@ namespace Presentation.ViewModels
     public sealed class DictionariesViewModel
     {
         public Guid Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public Language WordLanguage { get; set; }
         public Language TranslationLanguage { get; set; }
         public DateTime LastViewedAt { get; set; }
-        private List<WordViewModel> Words = new();
 
         public static IEnumerable<DictionariesViewModel> CreateArray(IEnumerable<Dictionary> dictionary) {
             return dictionary.Select(x => new DictionariesViewModel
@@ -21,8 +20,7 @@ namespace Presentation.ViewModels
                 Description = x.Description,
                 WordLanguage = x.WordLanguage,
                 TranslationLanguage = x.TranslationLanguage,
-                LastViewedAt = x.LastViewedAt,
-                Words = WordViewModel.CreateArray(x.DictionaryRows)
+                LastViewedAt = x.LastViewedAt
             });
         }
     }

@@ -3,11 +3,9 @@ import { RestDataSource } from "../rest.datasource"
 import { UserURLs } from "../../common/gateways"
 import { Observable } from "rxjs/internal/Observable"
 import { ReplaySubject } from "rxjs"
-import { HttpErrorResponse } from "@angular/common/http"
 import { MessageService } from "../alertMessage.models/alertMessage.service"
-import { Message } from "../alertMessage.models/message.model"
-import { GenerateTextContext } from "./generateWordContext.model"
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { GenerateTextQuery } from "./GenerateTextQuery"
 
 @Injectable({
     providedIn: 'root'
@@ -15,14 +13,16 @@ import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signal
 export class AiService {
     private _hubConnection: HubConnection
     private replaySubject: ReplaySubject<string>
-    
-    constructor(public dataSource: RestDataSource<GenerateTextContext>, private messageService: MessageService) {
+    private wordContextGeneratedSubject: ReplaySubject<string>
+
+    constructor(public dataSource: RestDataSource<GenerateTextQuery>, private messageService: MessageService) {
         this.replaySubject = new ReplaySubject<string>(1);
-        
+        this.wordContextGeneratedSubject = new ReplaySubject<string>(1);
+
         this._hubConnection = new HubConnectionBuilder()
-        .withUrl(UserURLs.generateWordContextHubUri())
-        .withAutomaticReconnect()
-        .build();
+            .withUrl(UserURLs.generateWordContextHubUri())
+            .withAutomaticReconnect()
+            .build();
 
         this._hubConnection.on("UpdateUsersAsync", users => {
 
@@ -31,29 +31,53 @@ export class AiService {
         this._hubConnection.on("SendMessageAsync", (user, message) => {
             this.replaySubject.next(message)
         });
+
+        this._hubConnection.on("OnGeneratedWordContextAsync", (message) => {
+            this.wordContextGeneratedSubject.next(message)
+        });
     }
 
-    getGeneratedWordContextObservable(): Observable<string>{
+    getWordContextGeneratedObservable(): Observable<string> {
         let subject = new ReplaySubject<string>(1)
-        this.replaySubject.subscribe(x=>{
+        this.replaySubject.subscribe(x => {
             subject.next(x)
         })
         return subject
     }
 
-    generateWordContext(GenerateTextModel: GenerateTextContext){
-        try{
-            this._hubConnection.start().then(x=>{
+    getGeneratedWordContextObservable(): Observable<string> {
+        let subject = new ReplaySubject<string>(1)
+        this.wordContextGeneratedSubject.subscribe(x => {
+            subject.next(x)
+        })
+        return subject
+    }
 
-                this._hubConnection.invoke("SendMessageAsync", "anton","2+2 is?").then(x=>{
-                    
+    removeConnection() {
+        this._hubConnection.invoke("RemoveConntextion", "anton").then(x => {
+            console.log("disconntected")
+        });
+    }
+
+
+    generateWordContext(generateTextQuery: GenerateTextQuery) {
+        try {
+            if (this._hubConnection.connectionId != undefined) {
+                this._hubConnection.invoke("SendMessageAsync", "anton", generateTextQuery).then(x => {
+
                 });
-                
+            }
+            else this._hubConnection.start().then(x => {
+
+                this._hubConnection.invoke("SendMessageAsync", "anton", generateTextQuery).then(x => {
+
+                });
+
             })
-            .catch(x=>{
-                console.log(x)
-            })  
+                .catch(x => {
+                    console.log(x)
+                })
         }
-        catch{}
+        catch { }
     }
 }

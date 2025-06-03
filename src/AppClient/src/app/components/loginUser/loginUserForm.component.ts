@@ -4,16 +4,17 @@ import { LoginUser } from "../../models/loginUser.models/loginUser.model"
 import { loginUserFormGroup } from "../../models/loginUser.models/loginUserFrom.model"
 import { Model } from "../../models/loginUser.models/repository.loginUser.model"
 import { HttpErrorResponse } from "@angular/common/http"
-import { NavigationEnd, Router } from "@angular/router"
+import { NavigationCancel, NavigationEnd, Router } from "@angular/router"
 import { filter } from 'rxjs/operators';
 import { MessageService } from "../../models/alertMessage.models/alertMessage.service"
 import { Message } from "../../models/alertMessage.models/message.model"
+import { JwtHelperService } from "@auth0/angular-jwt"
 
 @Component({
     selector: "loginUserForm",
     templateUrl: "./LoginUserForm.component.html",
     imports: [FormsModule, ReactiveFormsModule],
-    providers: []
+    providers: [JwtHelperService]
 })
 
 export class LoginUserFormComponent {
@@ -33,11 +34,11 @@ export class LoginUserFormComponent {
                     next: (v) => {
                     this.router.navigateByUrl("/")
                     this.router.events.pipe(
-                        filter((event: any) => event instanceof NavigationEnd)
+                        filter((event: any) => event instanceof NavigationEnd|| event instanceof NavigationCancel)
                     ).subscribe(_ => this.messageService.reportMessage(new Message(v.message)));
                 },
                 error: (e: HttpErrorResponse) => {
-                    this.setCustomErrors(e.error.errors)
+                    this.setCustomErrors(e.error?.errors)
                     this.formSubmitted = false
                 },
                 complete: () => {

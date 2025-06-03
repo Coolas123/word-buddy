@@ -1,5 +1,6 @@
 import { inject } from "@angular/core"
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms"
+import { LearnStatus } from "../../enums/learnStatus"
 
 export class CreateDictionaryFormControl extends FormControl {
     label: string
@@ -42,7 +43,7 @@ export class CreateDictionaryFormGroup extends FormGroup {
             WordLanguage: new CreateDictionaryFormControl("Язык слова", "WordLanguage", "", Validators.required),
 
             TranslationLanguage: new CreateDictionaryFormControl("Язык перевода", "TranslationLanguage", "", Validators.required),
-
+            
             Rows: formBuilder.array([])
         })
         
@@ -51,6 +52,8 @@ export class CreateDictionaryFormGroup extends FormGroup {
             Word: new CreateDictionaryFormControl("Слово", "Word", ""),
 
             Translation: new CreateDictionaryFormControl("Перевод", "Translation", ""),
+
+            LearnStatus: new CreateDictionaryFormControl("Статус изученности", "LearnStatus",4),
         }))
     }
 
@@ -74,7 +77,28 @@ export class CreateDictionaryFormGroup extends FormGroup {
             Word: new CreateDictionaryFormControl("Слово", "Word", ""),
 
             Translation: new CreateDictionaryFormControl("Перевод", "Translation", ""),
+
+            LearnStatus: new CreateDictionaryFormControl("Статус изученности", "LearnStatus",4),
         })
         this.getRows().push(newRow)
     }
+
+    addNewRows(newRows:FormArray){
+            let getNewRows = this.getRows()
+           
+            let lastRow = getNewRows.controls[getNewRows.value.length-1]
+            lastRow.patchValue({Word:newRows.value[0].NewWord,Translation:newRows.value[0].NewTranslation})
+            
+            for(let i=1;i<newRows.value.length;i++){
+                let newRow = this.formBuilder.group({
+                    Word: new CreateDictionaryFormControl("Слово", "NewWord", newRows.value[i].NewWord),
+        
+                    Translation: new CreateDictionaryFormControl("Перевод", "NewTranslation", newRows.value[i].NewTranslation),
+        
+                    LearnStatus: new CreateDictionaryFormControl("Статус", "LearnStatus", 4)
+                })
+                getNewRows.push(newRow)
+            }
+            this.addRow()
+        }
 }

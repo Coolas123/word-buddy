@@ -1,12 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
 using Domain.Shared;
 using Microsoft.AspNetCore.SignalR.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.TextGenerator.Queries.GenerateText
 {

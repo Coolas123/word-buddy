@@ -9,7 +9,7 @@ namespace Presentation.ViewModels
         public string WordText { get; private set; }
         public LearnStatus LearnStatus { get; private set; }
         public DateTime LearnStatusChangedAt { get; private set; }
-        public DateTime CreatedAt { get; private set; }
+        public DateTime? CardBoxLearnStatusChangedAt { get; private set; }
         public string WordTranslation { get; private set; }
         public IEnumerable<string> WordContexts { get; private set; }
 
@@ -20,7 +20,7 @@ namespace Presentation.ViewModels
                 WordText = x.WordText,
                 LearnStatus = x.LearnStatus,
                 LearnStatusChangedAt = x.LearnStatusChangedAt,
-                CreatedAt = x.CreatedAt,
+                CardBoxLearnStatusChangedAt = x.CardBoxLearnStatusChangedAt,
                 WordTranslation = x.WordTranslation,
             }).ToList();
         }

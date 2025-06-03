@@ -6,10 +6,11 @@ namespace Persistence
     public sealed class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions opt): base(opt) {
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);

@@ -30,7 +30,38 @@ namespace Domain.Errors
             public static readonly Error DictionariesWasNotFound = new Error
            (
                "GetDictionaries.Handle",
-               "Не нашлось словарей"
+               "there is no dicitonaries"
+           );
+        }
+
+        public static class CardPlan
+        {
+
+            public static readonly Error ThereIsNoCardPlans = new Error
+            (
+                "GetCardPlans.Handle",
+                "there is no card plans"
+            );
+
+            public static readonly Error DictionariesWasNotFound = new Error
+            (
+                "GetCardPlanDictionariesIdQueryHandler.Handle",
+                "there is no dictionaries"
+            );
+
+            public static readonly Error UpdateFailure = new Error
+            (
+                "UpdateDictionariesCardPlanCommandHandler.Handle",
+                "unsuccessful update"
+            );
+        }
+
+        public static class GeneratedTextHistory
+        {
+            public static readonly Error GeneratedTextHistoryWasNotFound = new Error
+           (
+               "GetGeneratedTextHistoryQuery.Handle",
+               "there is no contexts"
            );
         }
     }

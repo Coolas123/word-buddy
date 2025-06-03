@@ -1,1 +1,135 @@
-template 12312312
+<div class="row">
+    <div class="col"></div>
+    <div class="col-11">
+
+        <div class="row pt-2" style="height:80vh;">
+            <div class="col">
+                <div style="height: 150px;">
+                    <div>
+                        <select class="form-select" (change)="selectDictionary($event)">
+                            @for (dic of getDictionaries(); track dic; let i=$index){
+                            <option [value]="dic.Id">{{dic.Title}}</option>
+                            <option selected disabled value="">Выберите словарь</option>
+                            }
+                        </select>
+
+                        <select class="form-select" (change)="selectLearnStatus($event)">
+                            @for(status of newLearnStatues; track status){
+                            <option [value]="status.key">{{status.value}}</option>
+                            }
+                            <option value="" selected>Любой статус изученности</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="">
+                    <table class="table table-borderless ">
+                        <thead>
+                            <th class="fs-5" style="font-weight: 400;">На иностранном</th>
+                            <th class="fs-5" style="font-weight: 400;">Перевод</th>
+                        </thead>
+
+                        <tbody>
+                            @if(getSelectedDictionary() == undefined){
+                            <span class="fs-5">Словарь не выбран</span>
+                            }
+                            @for (row of getSelectedDictionary()?.DictionaryRows; track row; let i=$index){
+                            @if(selectedLearnStatus == row.LearnStatus || selectedLearnStatus.toString() ==""){
+                            <tr class="border border-secondary-subtle">
+
+
+                                <td style="cursor:pointer ;" colspan="2" (click)="selectWord($event,row)">
+                                    <div class="d-flex">
+                                        <div class="w-50">
+                                            {{row.WordText}}
+                                        </div>
+                                        <div>
+                                            {{row.WordTranslation}}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col d-flex align-items-end flex-column" style="max-height: 100%;">
+
+                <textarea readonly class="fs-5 w-100 border-0 mt-auto h-100"
+                    style="background-color: rgb(230 230 230); resize: none; outline: none;">{{resultGenerate}}{{isShowAnswers?'\n answers:'+answers:""}}</textarea>
+
+
+                <div style="box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.468);"
+                    class="w-100 border border-1 border-secondary-subtle p-2">
+                    <span class="d-block fs-5">
+                        @for (word of selectedWord; track word; let i=$index){
+                        {{word}}
+                        <button class="p-0 border-0" (click)="deleteWord(i)" style="background-color: rgb(230 230 230)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-x"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                            </svg>
+                        </button>
+                        }
+                    </span>
+                    <div>
+                        <div class="d-flex">
+                            <textarea [(ngModel)]="textCreatContent" placeholder="Опишите текст..."
+                                class="h-100 p-2 fs-5 form-control text-break border-0 rounded-0"
+                                style="background-color: rgb(230 230 230); field-sizing: content; resize: none;"></textarea>
+                        </div>
+                    </div>
+                    <button (click)="generateText()" class="btn btn-secondary mt-2 me-2" type="button">Создать
+                        текст</button>
+                    <button (click)="generateTest()" class="btn btn-secondary mt-2 me-2" type="button">Создать тест</button>
+                    @if(isTestButton){
+                    <button (click)="showAnswers()" class="btn btn-secondary mt-2" type="button">Показать
+                        ответы</button>
+                    }
+                    @if(resultGenerate!=""){
+                    <button (click)="saveContext()" class="btn btn-success mt-2 ms-2" type="button">Сохранить</button>
+                    }
+                    <button (click)="ask()" class="btn btn-secondary mt-2 ms-2" type="button">Спросить</button>
+                </div>
+            </div>
+            <div class="col">
+                <span class="btn-outline-success pb-2 d-grid">
+                    <input class="btn-check" type="checkbox" id="selectContextsInput" data-bs-toggle="collapse"
+                        href="#selectContextsCollapse" role="button" aria-expanded="false">
+                    <label (click)="loadContexts()"
+                        class="btn btn-outline-secondary rounded-2 align-items-center justify-content-center d-flex fs-3"
+                        for="selectContextsInput" style="cursor: pointer; height: auto; max-height: auto;">
+                        Сохраненные контексты</label>
+                </span>
+                <div class="collapse" id="selectContextsCollapse">
+                    @for (context of getSavedContests(); track context; let i=$index){
+                        <a href="#" class="ref1 truncate m-2" style="text-decoration: none;">
+                            <div class="card text-bg-light p-2">
+                                <span>{{context.Text}}</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col"></div>
+</div>
+
+<style>
+    textarea:focus {
+        box-shadow: none;
+    }
+    .truncate  {
+    margin: 0; /* Убираем внешний отступ */
+    -webkit-line-clamp: 5; /* Число отображаемых строк */
+    display: -webkit-box; /* Включаем флексбоксы */
+    -webkit-box-orient: vertical; /* Вертикальная ориентация */
+    overflow: hidden; /* Обрезаем всё за пределами блока */
+   }
+   .ref1:hover .card{border-color: rgb(0 0 0);}
+</style>

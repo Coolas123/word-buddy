@@ -17,7 +17,7 @@ export class LocalStorageService {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem(key);
     }
-    return null; // or return a default value
+    return null;
   }
 
   removeItem(key: string): void {

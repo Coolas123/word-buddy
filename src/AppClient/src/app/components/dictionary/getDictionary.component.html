@@ -1,34 +1,130 @@
-<div class="container-fluid text-left">
-    <section>
-        <div class="border bg-opacity-10 rounded pb-2">
+<div class="row text-left">
+    <section class="col-3">
+        <div class="row sticky-top pt-2">
+            <div class="col-2"></div>
+            <div class="col">
+
+                <div class="pb-2">
+                    <span class="fs-5">Опции для работы со cловарем</span>
+                </div>
+
+                <div class="d-grid pb-2">
+                    <input id="showWordTranslationLabel" class="btn-check d-flex" type="checkbox"
+                        (click)="showWordTranslation()" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="showWordTranslationLabel">Скрыть перевод</label>
+                </div>
+
+                <div class="d-grid pb-2">
+                    <input id="showLearnStatusPanel" class="btn-check" type="checkbox" (click)="showLearnStatusPanel()">
+                    <label class="btn btn-outline-secondary" for="showLearnStatusPanel">Скрыть строку статуса
+                        изученности</label>
+                </div>
+
+                <selectUploadFile class="d-grid pb-2"
+                    (onNewDictionaryRowsFromFile)="addNewDictionaryRowsToMainFormGroup($event)">
+                </selectUploadFile>
+
+                <form novalidate (ngSubmit)="moveToAnotherDictionarySubmitForm()">
+                    <span class="btn-outline-success pb-2 d-grid">
+                        <input (click)="selecteDictionary()" class="btn-check" type="checkbox" id="selectWordsInput"
+                            data-bs-toggle="collapse" href="#selectWordsInputCollapse" role="button"
+                            aria-expanded="false" aria-controls="collapseExample">
+                        <label class="btn btn-outline-secondary" for="selectWordsInput">Выбрать слова для переноса в
+                            другой словарь</label>
+                    </span>
+                    <div class="collapse" id="selectWordsInputCollapse">
+                        <div class="card card-body">
+                            <p>Ниже выберите словарь, куда необходимо перенести слова, затем выберите сами слова.</p>
+                            <select [(ngModel)]="moveToAnotherDictionary.dictionaryTargetId"
+                                [ngModelOptions]="{standalone: true}" class="form-select">
+                                @for(dictionary of dictionaries; track dictionary){
+                                <option [value]="dictionary.Id">{{dictionary.Title}}</option>
+                                }
+                                <option value="" selected disabled>Выберите словарь</option>
+                            </select>
+                            @if(!moveToAnotherDictionary.dictionaryTargetId ||
+                            moveToAnotherDictionary.WordsId.length==0){
+                            <ul class="text-danger">
+                                @if(!moveToAnotherDictionary.dictionaryTargetId){
+                                <li>
+                                    Выбериете словарь
+                                </li>
+                                }
+                                @if(moveToAnotherDictionary.WordsId.length==0){
+                                <li>
+                                    Выбериете слова для переноса
+                                </li>
+                                }
+                            </ul>
+                            }
+                        </div>
+
+                        <button type="submit" class="m-1 btn btn-success"
+                            [disabled]="moveToAnotherDictionaryFormSubmitted && (!moveToAnotherDictionary.dictionaryTargetId || moveToAnotherDictionary.WordsId.length==0)"
+                            [class.btn-secondary]="moveToAnotherDictionaryFormSubmitted && (!moveToAnotherDictionary.dictionaryTargetId || moveToAnotherDictionary.WordsId.length==0)">
+                            Перенести
+                        </button>
+
+                    </div>
+                </form>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </section>
+
+    <section class="col p-2">
+        <div class="d-flex justify-content-center">
+            <img style="display: none; position: absolute; z-index: 1;" id="showImg" src="{{currentShowImg}}">
+        </div>
+        <div class="border bg-opacity-10 pb-2">
             <form novalidate [formGroup]="formGroup" (ngSubmit)="submitForm()">
-                <div>
-                    <button type="submit" class="btn btn-success"
-                        [disabled]="formSubmitted && formGroup.invalid || formSubmitted || !formChanged"
-                        [class.btn-secondary]="formSubmitted && formGroup.invalid">
-                        Сохранить изменения
-                    </button>
+                <div class="d-flex justify-content-between">
+
+                    <div>
+                        <button type="submit" class="btn btn-success"
+                            [disabled]="formSubmitted && formGroup.invalid || formSubmitted || !formChanged"
+                            [class.btn-secondary]="formSubmitted && formGroup.invalid">
+                            Сохранить изменения
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <input (click)="changeEditMode()" class="btn-check" type="checkbox" id="editMode">
+                        <label class="btn rounded-0 btn-outline-secondary border-secondary-subtle"
+                            for="editMode">Редактировать</label>
+                    </div>
                 </div>
                 @for (control of formGroup.getDictionaryControls; track $index; let i = $index){
                 @if(control.modelProperty==="Title"){
-                <label>{{control.label}}</label>
-                <input class="form-control" name="{{control.modelProperty}}"
-                    formControlName="{{control.modelProperty}}" />
-                @if((formSubmitted || control.dirty) && control.invalid){
-                <ul class="text-danger">
-                    @for(error of control.getValidationMessages(); track error){
-                    <li>
-                        {{error}}
-                    </li>
+
+                @if(editMode){
+                <div>
+                    <label>{{control.label}}</label>
+                    <input class="form-control" name="{{control.modelProperty}}"
+                        formControlName="{{control.modelProperty}}" />
+                    @if((formSubmitted || control.dirty) && control.invalid){
+                    <ul class="text-danger">
+                        @for(error of control.getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
+                        }
+                    </ul>
                     }
-                </ul>
+                </div>
+                }
+                @else{
+                <div class="text-center">
+                    <p class="fs-3">{{control.value}}</p>
+                </div>
                 }
                 }
+
                 @else if(control.modelProperty==="Description"){
+                @if(editMode){
                 <div class="pb-2">
                     <label>{{control.label}}</label>
-                    <textarea style="resize: none;" rows="4" class="form-control"
-                        asp-for="CreateDictionaryCommand.Description" placeholder="Введите описание словаря"
+                    <textarea style="resize: none;" rows="4" class="form-control" placeholder="Введите описание словаря"
                         name="{{control.modelProperty}}" formControlName="{{control.modelProperty}}"></textarea>
                     @if((formSubmitted || control.dirty) && control.invalid){
                     <ul class="text-danger">
@@ -41,141 +137,472 @@
                     }
                 </div>
                 }
+                @else {
+                <div class="text-center">
+                    <p class="fs-5">{{control.value}}</p>
+                </div>
+                }
+                }
                 @else if(control.modelProperty === "WordLanguage"){
-                    <div class="form-inline">
-                        <label>{{control.label}}</label>
-                        <label class="float-end">{{formGroup.getDictionaryControls[i+1].label}}</label>
+
+                @if(!editMode){
+                <hr>
+                <div>
+                    <span class="pt-2">Сортировка</span>
+                    <div>
+                        <select #sortSelect (change)="sort(sortSelect.value)" class="form-select">
+                            <option value="sortByLastLearnStatusChangedAtDesc">Убыванию даты изменения статуса слова
+                            </option>
+                            <option value="sortByLastLearnStatusChangedAtAsc">Возрастанию даты изменения статуса слова
+                            </option>
+                            <option disabled selected value="">Отсортировать по</option>
+                        </select>
                     </div>
-
-                <div class="input-group">
-                    <select class="form-select" name="{{control.modelProperty}}"
-                        formControlName="{{control.modelProperty}}">
-                        @for(key of getLanguage(); track key){
-                        <option [ngValue]="languages[key]">{{key}}</option>
-                        }
-                        <option [value]="newDictionary.UpdateDictionaryCommand?.WordLanguage" selected>
-                            {{newDictionary.UpdateDictionaryCommand?.WordLanguage}}</option>
-                    </select>
-
-                    <select class="form-select" name="{{formGroup.getDictionaryControls[i+1].modelProperty}}"
-                        formControlName="{{formGroup.getDictionaryControls[i+1].modelProperty}}">
-                        @for(key of getLanguage(); track key){
-                        <option [ngValue]="languages[key]">{{key}}</option>
-                        }
-                        <option [value]="newDictionary.UpdateDictionaryCommand?.TranslationLanguage" selected>
-                            {{newDictionary.UpdateDictionaryCommand?.TranslationLanguage}}</option>
-                    </select>
-
                 </div>
-                @if((formSubmitted || control.dirty) && control.invalid){
-                <ul class="text-danger">
-                    @for(error of control.getValidationMessages(); track error){
-                    <li>
-                        {{error}}
-                    </li>
+                }
+
+                <div class="border">
+
+                    @if(editMode){
+                    <div class="pb-2">
+                        <div class="form-inline">
+                            <label>{{control.label}}</label>
+                            <label class="float-end">{{formGroup.getDictionaryControls[i+1].label}}</label>
+                        </div>
+                        <div class="input-group">
+                            <select class="form-select" name="{{control.modelProperty}}"
+                                formControlName="{{control.modelProperty}}">
+                                @for(key of getLanguage(); track key){
+                                <option [ngValue]="languages[key]">{{key}}</option>
+                                }
+                                <option [value]="newDictionary.UpdateDictionaryCommand?.WordLanguage" selected>
+                                    {{newDictionary.UpdateDictionaryCommand?.WordLanguage}}</option>
+                            </select>
+
+
+
+                            <select class="form-select" name="{{formGroup.getDictionaryControls[i+1].modelProperty}}"
+                                formControlName="{{formGroup.getDictionaryControls[i+1].modelProperty}}">
+                                @for(key of getLanguage(); track key){
+                                <option [ngValue]="languages[key]">{{key}}</option>
+                                }
+                                <option [value]="newDictionary.UpdateDictionaryCommand?.TranslationLanguage" selected>
+                                    {{newDictionary.UpdateDictionaryCommand?.TranslationLanguage}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
                     }
-                </ul>
-                }
-                <hr />
-                }
-                }
-                <div formArrayName="DictionaryRows">
-                    @for (row of getRows().controls; track row; let i=$index){
-                    <div class="input-group bg-opacity-10 border border-secondary-subtle rounded" [formGroupName]="i">
-                        
-                        <div class="dropdown">
-                            <a style="width: 38px;" class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="gray" class="bi bi-list" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                                </svg>
-                              </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                              <li><a (click)="generateWordContext(i)" (click)="getPompt($event)" type="button" class="dropdown-item">Создать контекст</a></li>
-                            </ul>
-                      </div>
-                        
+                    @else {
+                    <div>
 
-                        <input class="form-control" formControlName="WordText" />
-                        
-                        @if(row.controls["WordText"] != undefined && (formSubmitted || row.controls["WordText"].dirty) &&
-                        row.controls["WordText"].invalid){
-
-                        <ul class="text-danger">
-                            @for(error of getControl(row.controls["WordText"]).getValidationMessages(); track error){
-                            <li>
-                                {{error}}
-                            </li>
-                            }
-                        </ul>
-                        }
-
-                        <input class="form-control" formControlName="WordTranslation" />
-                        @if(row.controls["WordTranslation"] != undefined && (formSubmitted ||
-                        row.controls["WordTranslation"].dirty) &&
-                        row.controls["WordTranslation"].invalid){
-                        <ul class="text-danger">
-                            @for(error of getControl(row.controls["WordTranslation"]).getValidationMessages(); track error){
-                            <li>
-                                {{error}}
-                            </li>
-                            }
-                        </ul>
-                        }
+                        <span>{{control.label}}: {{control.value}}</span>
+                        <span class="float-end">{{formGroup.getDictionaryControls[i+1].label}}:
+                            {{formGroup.getDictionaryControls[i+1].value}}</span>
                     </div>
-                    
-                    <div class="text-break bg-opacity-10 border border-secondary-subtle rounded">
-                        @if(openMenuFlag){
-                            @if(this.wordContext ==""){
-                                <span>loading...</span>
-                            }
-                            @else {<span>{{this.wordContext}}</span>}
+                    }
+                    @if((formSubmitted || control.dirty) && control.invalid){
+                    <ul class="text-danger">
+                        @for(error of control.getValidationMessages(); track error){
+                        <li>
+                            {{error}}
+                        </li>
                         }
-                    </div>
+                    </ul>
                     }
                 </div>
+                }
+                }
+                <div>
+                    <table class=" m-0 table table-borderless">
+                        <thead>
 
-                <div formArrayName="NewDictionaryRows">
-                    @for (row of getNewRows().controls; track row; let i=$index){
-                    <div class="input-group bg-opacity-10 border border-secondary-subtle rounded" [formGroupName]="i">
-                        <input class="form-control" formControlName="NewWord"
-                            (ngModelChange)="this.inputSubject.next($event)" />
-                        @if(row.controls["NewWord"] != undefined && (formSubmitted || row.controls["NewWord"].dirty) &&
-                        row.controls["NewWord"].invalid){
+                        </thead>
+                        <tbody formArrayName="DictionaryRows">
+                            @for (row of getRows().controls; track row; let i=$index){
+                            <tr id="{{'row'+i}}" [formGroupName]="i" [ngStyle]="selecteDictionaryRowsStyle()"
+                                [ngClass]="selecteDictionaryRowsClass()">
 
-                        <ul class="text-danger">
-                            @for(error of getControl(row.controls["NewWord"]).getValidationMessages(); track error){
-                            <li>
-                                {{error}}
-                            </li>
+                                <td (click)="selecteDictionaryRows(i,$event)" [class.bg-danger]="selectMode"
+                                    class="p-0">
+
+                                    <div [style.cursor]="selectMode?'pointer':'default'" [class.dropdown]="!selectMode"
+                                        class="d-flex align-items-center justify-content-center">
+                                        <button [attr.disabled]="selectMode" class="btn dropdown p-0 border-0"
+                                            type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="gray"
+                                                class="bi bi-list" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                                            </svg>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li><button (click)="showWordContext('showWordContext',i)"
+                                                    (click)="generateWordContext('loadingSpan',i,row, 'WordText','WordContexts')"
+                                                    type="button" class="dropdown-item">Создать контекст</button></li>
+                                            <li>
+                                                <button class="dropdown-item" type="button"
+                                                    (click)="showWordContext('showWordContext',i)">Сохранненые
+                                                    контексты</button>
+                                            </li>
+                                            <li>
+                                                <button (click)="loadRowImg(i)" type="button" class="dropdown-item"
+                                                    data-bs-toggle="modal" data-bs-target="#loadImgModal">
+                                                    Загрузить фотографию
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button (click)="showNote(i)" type="button"
+                                                    class="dropdown-item">
+                                                    Заметки
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+
+                                <td (click)="selecteDictionaryRows(i,$event)" class="p-0">
+
+
+                                    <input [style.cursor]="selectMode?'pointer':'text'" [readonly]="selectMode"
+                                        class="rounded-0 border-0 border-end form-control" formControlName="WordText" />
+                                    @if(row.controls["WordText"] != undefined && (formSubmitted ||
+                                    row.controls["WordText"].dirty)
+                                    &&
+                                    row.controls["WordText"].invalid){
+
+                                    <ul class="text-danger">
+                                        @for(error of getControl(row.controls["WordText"]).getValidationMessages();
+                                        track error){
+                                        <li>
+                                            {{error}}
+                                        </li>
+                                        }
+                                    </ul>
+                                    }
+                                </td>
+
+                                <td (click)="selecteDictionaryRows(i,$event)" class="p-0">
+                                    <input [style.filter]="isShowWordTranslation?'blur(10px)':'blur(0)'"
+                                        [style.cursor]="selectMode?'pointer':'text'" [readonly]="selectMode"
+                                        class="rounded-0 border-0 form-control" formControlName="WordTranslation" />
+
+                                    @if(row.controls["WordTranslation"] != undefined && (formSubmitted ||
+                                    row.controls["WordTranslation"].dirty) &&
+                                    row.controls["WordTranslation"].invalid){
+                                    <ul class="text-danger">
+                                        @for(error of
+                                        getControl(row.controls["WordTranslation"]).getValidationMessages(); track
+                                        error){
+                                        <li>
+                                            {{error}}
+                                        </li>
+                                        }
+                                    </ul>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr [style.display]="isShowLearnStatusPanel?'none':'table-row'" [formGroupName]="i"
+                                class="border-bottom border-end border-start border-secondary-subtle">
+                                <td colspan="2" class="p-0">
+                                    <select (change)="changeLearnStatusChangedAt(row)" formControlName="LearnStatus" class="rounded-0 border-0 form-select">
+
+                                        @for(status of selectedLearnStatues; track status){
+                                        <option [value]="status.index"
+                                            [selected]="status.key == row.controls['LearnStatus'].value">
+                                            {{status.value}}</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <div (mouseleave)="closeShowImg(row.controls['ImgBase64'].value)"
+                                        (mouseover)="showImg(row.controls['ImgBase64'].value,$event)">Показать картинку
+                                    </div>
+                                </td>
+                            </tr>
+
+
+
+                            <tr [formGroupName]="i" style="display: none;" id="{{'showWordContext'+i}}"
+                                class="border-bottom border-end border-start border-secondary-subtle">
+                                <td colspan="3" class="p-0" formArrayName="WordContexts">
+                                    @if(row.controls["WordContexts"].value != undefined ||
+                                    row.controls["WordContexts"].value.length !=0){
+                                    @for(context of getWordContexts(i,"DictionaryRows").controls; track context; let j =
+                                    $index){
+                                    <div [formGroupName]="j">
+                                        <span class="ps-1">{{context.controls["Text"].value}}</span>
+                                        <input [value]="context.controls['IsForSave'].value" formControlName="IsForSave"
+                                            class="btn-check" type="checkbox" id="{{'checkBoxWordContext'+j}}">
+                                        <label id="saveLabel{{i+j}}" style="display:none;"
+                                            class="btn btn-outline-success btn-sm m-1"
+                                            for="{{'checkBoxWordContext'+j}}">Сохранить</label>
+                                    </div>
+                                    }
+                                    }
+                                    <span style="display: none;" id="{{'loadingSpan'+i}}">loading...</span>
+                                </td>
+                            </tr>
+
+
+                            <tr [formGroupName]="i" style="display: none;" class="border border-secondary-subtle">
+                                <td class="p-0 ">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <button type="button" (click)="closeNote(i)" class="btn p-0 border-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34"
+                                                fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td colspan="2" class="p-0">
+                                    <div>
+                                        <textarea formControlName="NoteText" placeholder="Напишите заметки"
+                                            style="field-sizing: content;"
+                                            class="form-control border-0 rounded-0"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="3" style="height: 10px; background-color:rgb(230 230 230);"></td>
+                            </tr>
                             }
-                        </ul>
-                        }
+                        </tbody>
+                    </table>
+                </div>
 
-                        <input class="form-control" formControlName="NewTranslation"
-                            (ngModelChange)="this.inputSubject.next($event)" />
-                        @if(row.controls["NewTranslation"] != undefined && (formSubmitted ||
-                        row.controls["NewTranslation"].dirty) &&
-                        row.controls["NewTranslation"].invalid){
-                        <ul class="text-danger">
-                            @for(error of getControl(row.controls["NewTranslation"]).getValidationMessages(); track
-                            error){
-                            <li>
-                                {{error}}
-                            </li>
+                <div>
+                    <table class="m-0 table table-borderless">
+                        <thead>
+
+                        </thead>
+                        <tbody formArrayName="NewDictionaryRows">
+                            @for (row of getNewRows().controls; track row; let i=$index){
+                            <tr [formGroupName]="i" class="border border-secondary-subtle">
+                                <td class="p-0">
+                                    <div class="dropdown d-flex align-items-center justify-content-center">
+                                        <button class="btn dropdown p-0" type="button" id="dropdownMenuButton1"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="gray"
+                                                class="bi bi-list" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                                            </svg>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li><button (click)="showWordContext('newShowWordContext',i)"
+                                                    (click)="generateWordContext('newLoadingSpan',i,row, 'NewWord','WordContexts')"
+                                                    type="button" class="dropdown-item">Создать контекст
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="dropdown-item" type="button"
+                                                    (click)="showWordContext('newShowWordContext',i)">Сохранненые
+                                                    контексты
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                                    data-bs-target="#loadImgModal">
+                                                    Загрузить фотографию
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+
+                                <td class="p-0">
+                                    <input class="rounded-0 border-0 border-end form-control" formControlName="NewWord"
+                                        (input)="this.inputSubject.next($event)" />
+
+                                    @if(row.controls["NewWord"] != undefined && (formSubmitted ||
+                                    row.controls["NewWord"].dirty) &&
+                                    row.controls["NewWord"].invalid){
+
+                                    <ul class="text-danger">
+                                        @for(error of getControl(row.controls["NewWord"]).getValidationMessages(); track
+                                        error){
+                                        <li>
+                                            {{error}}
+                                        </li>
+                                        }
+                                    </ul>
+                                    }
+                                </td>
+
+                                <td class="p-0">
+                                    <input [style.filter]="isShowWordTranslation?'blur(10px)':'blur(0)'"
+                                        class="rounded-0 border-0 form-control" formControlName="NewTranslation"
+                                        (input)="this.inputSubject.next($event)" />
+
+                                    @if(row.controls["NewTranslation"] != undefined && (formSubmitted ||
+                                    row.controls["NewTranslation"].dirty) &&
+                                    row.controls["NewTranslation"].invalid){
+                                    <ul class="text-danger">
+                                        @for(error of
+                                        getControl(row.controls["NewTranslation"]).getValidationMessages(); track
+                                        error){
+                                        <li>
+                                            {{error}}
+                                        </li>
+                                        }
+                                    </ul>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr [style.display]="isShowLearnStatusPanel?'none':'table-row'" [formGroupName]="i"
+                                class="border-bottom border-end border-start border-secondary-subtle">
+                                <td colspan="2" class="p-0">
+                                    <select formControlName="LearnStatus" class="rounded-0 border-0 form-select">
+
+                                        @for(status of newLearnStatues; track status){
+                                        <option [value]="status.index">{{status.value}}</option>
+                                        }
+                                        <option [value]="4" selected>{{learnStatuesEnum.NotStudied}}</option>
+                                    </select>
+                                </td>
+                                <td></td>
+                            </tr>
+
+                            <tr [formGroupName]="i" style="display: none;" id="{{'newShowWordContext'+i}}"
+                                class="text-break border-bottom border-end border-start border-secondary-subtle">
+                                <td colspan="3" class="p-0" formArrayName="WordContexts">
+                                    @if(row.controls["WordContexts"].value != undefined ||
+                                    row.controls["WordContexts"].value.length !=0){
+                                    @for(context of getWordContexts(i,"NewDictionaryRows").controls; track context; let
+                                    j = $index){
+                                    <div [formGroupName]="j">
+                                        <span class="ps-1">{{context.controls["Text"].value}}</span>
+                                        <input [value]="context.controls['IsForSave'].value" formControlName="IsForSave"
+                                            class="btn-check" type="checkbox" id="{{'newCheckBoxWordContext'+j}}">
+                                        <label class="btn btn-outline-success btn-sm m-1"
+                                            for="{{'newCheckBoxWordContext'+j}}">Сохранить</label>
+                                    </div>
+                                    }
+                                    }
+                                    <span style="display: none;" id="{{'newLoadingSpan'+i}}">loading...</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3" style="height: 10px; background-color:rgb(230 230 230);"></td>
+                            </tr>
                             }
-                        </ul>
-                        }
-                    </div>
-
-                    }
+                        </tbody>
+                    </table>
                 </div>
             </form>
+        </div>
+
+        <div class="modal fade" id="loadImgModal" tabindex="-1" aria-labelledby="loadImgModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="loadImgModalLabel">Загузка фото</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="p-2">
+                        <input class="form-control" type="file" (change)="laodImg($event)">
+                    </div>
+                    <div class="text-center p-2">
+                        <img class="rounded-3" style="max-width: 80%;width: auto;" src="{{currentImg}}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button (click)="saveImg()" type="button" data-bs-dismiss="modal"
+                            class="btn btn-primary">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="col-3 pt-2">
+
+        <div class="row sticky-top pt-2">
+
+            <div class="col">
+                <div class="pb-2 d-grid">
+                    <span class="btn-outline-success pb-2 d-grid">
+                        <input class="btn-check" type="checkbox" id="selectCardsInput" data-bs-toggle="collapse"
+                            href="#selectCardsCollapse" role="button" aria-expanded="false">
+                        <label
+                            class="btn btn-outline-secondary rounded-2 align-items-center justify-content-center d-flex fs-3"
+                            for="selectCardsInput" style="cursor: pointer; height: 100px; max-height: auto;">
+                            Карточки</label>
+                    </span>
+
+                    <div class="collapse" id="selectCardsCollapse">
+                        <a (click)="redirectToCards('NotStudied')"
+                            class="d-grid cards border border-2 border-secondary rounded-2 link-underline link-underline-opacity-0"
+                            style="cursor: pointer; height: 140px; max-height: auto; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                            <div class=" align-items-center justify-content-center d-flex">
+                                <span class="fs-3 text-secondary">Не выучено</span>
+                            </div>
+                        </a>
+
+                        <a (click)="redirectToCards('InStudying')"
+                            class="d-grid cards border border-2 border-secondary rounded-2 link-underline link-underline-opacity-0"
+                            style="cursor: pointer; height: 140px; max-height: auto; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                            <div class=" align-items-center justify-content-center d-flex">
+                                <span class="fs-3 text-secondary">В изучении</span>
+                            </div>
+                        </a>
+
+                        <a (click)="redirectToCards('NeedToRemember')"
+                            class="d-grid cards border border-2 border-secondary rounded-2 link-underline link-underline-opacity-0"
+                            style="cursor: pointer; height: 140px; max-height: auto; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                            <div class=" align-items-center justify-content-center d-flex">
+                                <span class="fs-3 text-secondary">Нужно повторить</span>
+                            </div>
+                        </a>
+
+                        <a (click)="redirectToCards('VeryDifficult')"
+                            class="d-grid cards border border-2 border-secondary rounded-2 link-underline link-underline-opacity-0"
+                            style="cursor: pointer; height: 140px; max-height: auto; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                            <div class=" align-items-center justify-content-center d-flex">
+                                <span class="fs-3 text-secondary">Очень сложно</span>
+                            </div>
+                        </a>
+
+                        <a (click)="redirectToCards('Studied')"
+                            class="d-grid cards border border-2 border-secondary rounded-2 link-underline link-underline-opacity-0"
+                            style="cursor: pointer; height: 140px; max-height: auto; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                            <div class=" align-items-center justify-content-center d-flex">
+                                <span class="fs-3 text-secondary">Выучено</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2"></div>
         </div>
     </section>
 </div>
 
 <style>
     .dropdown:hover .dropdown-menu {
-  display: block;
-}
+        display: block;
+        top: 100%;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.5),
+            0px 2px 4px rgba(0, 0, 0, 0.1),
+            0px 4px 8px rgba(0, 0, 0, 0.1),
+            0px 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .cards:hover {
+        background-color: rgb(222, 222, 222);
+    }
 </style>

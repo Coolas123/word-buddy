@@ -2,8 +2,7 @@ import { Injectable } from "@angular/core"
 import { RegisterUser } from "./registerUser.model"
 import { RestDataSource } from "../rest.datasource"
 import { UserURLs } from "../../common/gateways"
-import { Observable } from "rxjs"
-import { LoginUser } from "../loginUser.models/loginUser.model"
+import { BehaviorSubject, Observable } from "rxjs"
 
 @Injectable()
 export class Model {
@@ -17,5 +16,13 @@ export class Model {
 
     public authenticate(token: string): void {
         this.dataSource.tokenService.setToken(token)
+    }
+
+    public logout(): void{
+        this.dataSource.tokenService.removeToken()
+    }
+
+    public isAuthrnticatedBehaviorSubject():BehaviorSubject<boolean> {
+        return this.dataSource.tokenService.isAuthenticated
     }
 }

@@ -36,6 +36,10 @@ namespace Persistence.Configurations
             builder
                 .Property(x => x.HashPassword)
                 .HasColumnName("hash_password");
+
+            builder
+                .HasOne(x => x.Subscription)
+                .WithOne();
         }
     }
 }

@@ -51,26 +51,71 @@ export class GetDictionaryFormGroup extends FormGroup {
         
         let r = this.controls["DictionaryRows"] as FormArray
         for(let i=0; dictionary.UpdateDictionaryRowsCommand?.DictionaryRows && i<dictionary.UpdateDictionaryRowsCommand.DictionaryRows.length; i++){
+            let wordContexts = dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].WordContexts.map((x)=>this.formBuilder.group({
+                Text: new GetDictionaryFormControl("Контекст", "Text", x),
+            
+                IsForSave: new GetDictionaryFormControl("Сохранить контекст", "IsForSave", true),
+            }))??[]
+
+            let wordContextsArray = formBuilder.array(wordContexts??[])
+
             r.push(this.formBuilder.group({
+                //Id: new GetDictionaryFormControl("номер", "Id", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].Id),
+
                 WordText: new GetDictionaryFormControl("Слово", "WordText", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].WordText),
     
                 WordTranslation: new GetDictionaryFormControl("Перевод", "WordTranslation", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].WordTranslation),
                 
-                LearnStatus: new GetDictionaryFormControl("Статус", "LearnStatus", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].LearnStatus),
+                LearnStatus: new GetDictionaryFormControl("Статус изученности", "LearnStatus", Object.keys(LearnStatus).findIndex((x)=>(x == (dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i]?.LearnStatus??"")))),
+                
+                ImgBase64: new GetDictionaryFormControl("Фотография", "ImgBase64", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].ImgBase64 ? "data:image/jpeg;base64,"+dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].ImgBase64:""),
+
+                ImgPath: new GetDictionaryFormControl("Фотография", "ImgPath", ""),
+                
+                NoteText: new GetDictionaryFormControl("Заметка", "NoteText", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].NoteText,Validators.maxLength(1024)),
+
+                LearnStatusChangedAt: new GetDictionaryFormControl("Дата изменения", "LearnStatusChangedAt", dictionary.UpdateDictionaryRowsCommand?.DictionaryRows[i].LearnStatusChangedAt),
+
+                WordContexts: wordContextsArray
             }))
         }
 
         let newRows = this.controls["NewDictionaryRows"] as FormArray
-        newRows.controls.push(this.formBuilder.group({
+        newRows.push(this.formBuilder.group({
             NewWord: new GetDictionaryFormControl("Слово", "NewWord", ""),
 
             NewTranslation: new GetDictionaryFormControl("Перевод", "NewTranslation", ""),
+
+            LearnStatus: new GetDictionaryFormControl("Статус изученности", "LearnStatus", 4),
+
+            ImgBase64: new GetDictionaryFormControl("Фотография", "ImgBase64", ""),
+
+            ImgPath: new GetDictionaryFormControl("Фотография", "ImgPath", ""),
+
+            NoteText: new GetDictionaryFormControl("Заметка", "NoteText", "",Validators.maxLength(1024)),
+            
+            WordContexts: this.formBuilder.array([]),
         }))
     }
 
     get getDictionaryControls(): GetDictionaryFormControl[] {
         return Object.keys(this.controls)
             .map(k => this.controls[k] as GetDictionaryFormControl);
+    }
+
+    changeLearnStatusChangedAt(row:FormGroup, newDate:Date){
+        row.controls["LearnStatusChangedAt"].patchValue(newDate)
+    }
+
+    patchDictionaryRows(rows:any){
+        this.controls["DictionaryRows"].patchValue(rows);
+    }
+
+    addImg(rowIndex:number,img:any){
+        (this.getRows().controls[rowIndex] as FormGroup).controls["ImgBase64"].patchValue(img)
+    }
+    addImgFile(rowIndex:number,img:any){
+        (this.getRows().controls[rowIndex] as FormGroup).controls["ImgFile"].patchValue(img)
     }
 
     getFormValidationMessages(): string[] {
@@ -87,12 +132,76 @@ export class GetDictionaryFormGroup extends FormGroup {
         return this.controls["NewDictionaryRows"] as FormArray
     }
 
+    getWordContexts(rowIndex:number, controllerName:string){
+        let rows = this.controls[controllerName] as FormArray
+
+        let row = rows.controls[rowIndex] as FormGroup
+
+        return row.controls["WordContexts"] as FormArray
+    }
+
+    addNewWordContext(row:GetDictionaryFormGroup, rowIndex:number):number{
+        let newWordContexts = this.formBuilder.group({
+            Text: new GetDictionaryFormControl("Контекст", "Text", ""),
+        
+            IsForSave: new GetDictionaryFormControl("Сохранить контекст", "IsForSave", false),
+        })
+        let wordContexts = row.controls["WordContexts"] as FormArray
+
+        wordContexts.push(newWordContexts);
+
+        return wordContexts.length
+    }
+
+    addWordContext(wordContext: string,row:GetDictionaryFormGroup, wordContextIndex:number){
+        let wordContexts = row.controls["WordContexts"] as FormArray
+        let wordContextsGroup = wordContexts.controls[wordContextIndex] as FormGroup
+        wordContextsGroup.controls["Text"].setValue(wordContextsGroup.controls["Text"].value+wordContext)
+    }
+
     addNewRow(){
         let newRow = this.formBuilder.group({
             NewWord: new GetDictionaryFormControl("Слово", "NewWord", ""),
 
             NewTranslation: new GetDictionaryFormControl("Перевод", "NewTranslation", ""),
+
+            LearnStatus: new GetDictionaryFormControl("Статус", "LearnStatus", 4),
+
+            ImgBase64: new GetDictionaryFormControl("Фотография", "ImgBase64", ""),
+
+            ImgPath: new GetDictionaryFormControl("Фотография", "ImgPath", ""),
+
+            NoteText: new GetDictionaryFormControl("Заметка", "NoteText", "",Validators.maxLength(1024)),
+            
+            WordContexts: this.formBuilder.array([]),
         })
         this.getNewRows().push(newRow)
+    }
+
+    addNewRows(newRows:FormArray){
+        let getNewRows = this.getNewRows()
+       
+        let lastRow = getNewRows.controls[getNewRows.value.length-1]
+        lastRow.patchValue({NewWord:newRows.value[0].NewWord,NewTranslation:newRows.value[0].NewTranslation})
+        
+        for(let i=1;i<newRows.value.length;i++){
+            let newRow = this.formBuilder.group({
+                NewWord: new GetDictionaryFormControl("Слово", "NewWord", newRows.value[i].NewWord),
+    
+                NewTranslation: new GetDictionaryFormControl("Перевод", "NewTranslation", newRows.value[i].NewTranslation),
+    
+                LearnStatus: new GetDictionaryFormControl("Статус", "LearnStatus", 4),
+
+                ImgBase64: new GetDictionaryFormControl("Фотография", "ImgBase64", ""),
+
+                ImgPath: new GetDictionaryFormControl("Фотография", "ImgPath", ""),
+
+                NoteText: new GetDictionaryFormControl("Заметка", "NoteText", "",Validators.maxLength(1024)),
+                
+                WordContexts: this.formBuilder.array([]),
+            })
+            getNewRows.push(newRow)
+        }
+        this.addNewRow()
     }
 }

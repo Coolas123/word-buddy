@@ -1,0 +1,156 @@
+<div class="row">
+    <div class="col">
+        <div class="p-2">
+            <div class="d-grid gap-2 nav flex-column nav-pills me-3" role="tablist" aria-orientation="vertical">
+                <input value="NotStudied" [(ngModel)]="selectedPlanName" class="nav-tab btn-check"
+                    id="v-pills-notStudied-tab" data-bs-toggle="pill" data-bs-target="#v-pills-notStudied" type="radio"
+                    role="tab" aria-controls="v-pills-notStudied">
+                <label class="btn border border-secondary" for="v-pills-notStudied-tab">
+                    Не выучено
+                </label>
+                <input value="InStudying" [(ngModel)]="selectedPlanName" class="nav-tab btn-check"
+                    id="v-pills-inStudying-tab" data-bs-toggle="pill" data-bs-target="#v-pills-inStudying" type="radio"
+                    role="tab" aria-controls="v-pills-inStudying">
+                <label class="btn border border-secondary" for="v-pills-inStudying-tab">
+                    Нужно повторить
+                </label>
+                <button class="nav-tab btn border border-secondary" id="v-pills-disabled-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-disabled" type="radio" role="tab" aria-controls="v-pills-disabled"
+                    disabled>Disabled</button>
+                <button class="nav-tab btn border border-secondary" id="v-pills-messages-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-messages" type="radio" role="tab"
+                    aria-controls="v-pills-messages">Messages</button>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="">
+            <form novalidate (ngSubmit)="selectCardsGroupSubmitForm()">
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="v-pills-notStudied" role="tabpanel"
+                        aria-labelledby="v-pills-notStudied-tab" tabindex="0">
+                        <p class="fs-5">Ниже выберите словари для повторения:</p>
+                        <table class="m-0 table table-borderless">
+                            <thead>
+
+                            </thead>
+                            <tbody>
+                                @for (dic of dictionaries; track dic; let i=$index){
+                                <tr id="{{'row'+i}}"
+                                    [ngStyle]="selecteDictionaryRowsStyle(selectedPlanName == 'NotStudied')"
+                                    [ngClass]="selecteDictionaryRowsClass(selectedPlanName == 'NotStudied')">
+
+                                    <td class="p-0 pt-1 text-center" [class.bg-danger]="selectedPlanName == 'NotStudied'"
+                                        height="36" width="34">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            fill="currentColor" class="bi bi-list bi-check2-square" viewBox="0 0 16 16">
+                                            <path
+                                                d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                                            <path
+                                                d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                                        </svg>
+                                    </td>
+
+                                    <td (click)="selecteDictionaryRows(selectedPlanName == 'NotStudied',i,$event)"
+                                        class="p-0">
+                                        <input [style.cursor]="selectedPlanName == 'NotStudied'?'pointer':'default'"
+                                            [attr.readonly]="selectedPlanName == 'NotStudied'" [value]="dic.Title"
+                                            class="rounded-0 border-0 form-control">
+                                    </td>
+                                    <td class="p-0" style="width:1px; white-space:nowrap;">
+                                        <button class="btn rounded-0" type="button"
+                                        (click)="showWordContext('moreDetailsCollapse',i)">
+                                            Подробнее
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr style="display: none;" id="{{'moreDetailsCollapse'+i}}">
+                                    <td colspan="3">
+                                        <span>Описание: {{dic.Description}}</span>
+                                        <br>
+                                        <small class="text-body-secondary">Просмотрено:{{getFormatDate(dic.LastViewedAt!)}}</small>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="3" style="background-color:rgb(230 230 230);"></td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <button type="submit" class="m-1 btn btn-success"
+                            [disabled]="formSubmitted || !dictionariesCard.length"
+                            [class.btn-secondary]="formSubmitted || !dictionariesCard.length">
+                            Начать повторение
+                        </button>
+                    </div>
+
+                    <div class="tab-pane fade" id="v-pills-inStudying" role="tabpanel"
+                        aria-labelledby="v-pills-inStudying-tab" tabindex="0">
+                        <p class="fs-5">Ниже выберите словари для повторения:</p>
+                        <table class="m-0 table table-borderless">
+                            <thead>
+
+                            </thead>
+                            <tbody>
+                                @for (dic of dictionaries; track dic; let i=$index){
+                                <tr id="{{'row'+i}}"
+                                    [ngStyle]="selecteDictionaryRowsStyle(selectedPlanName == 'InStudying')"
+                                    [ngClass]="selecteDictionaryRowsClass(selectedPlanName == 'InStudying')">
+
+                                    <td class="pt-1 text-center" [class.bg-danger]="selectedPlanName == 'InStudying'"
+                                        height="36" width="34">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            fill="currentColor" class="bi bi-list bi-check2-square" viewBox="0 0 16 16">
+                                            <path
+                                                d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z" />
+                                            <path
+                                                d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0" />
+                                        </svg>
+                                    </td>
+
+                                    <td [class.bg-danger]="selectedPlanName == 'InStudying'"
+                                        (click)="selecteDictionaryRows(selectedPlanName == 'InStudying',i,$event)"
+                                        class="p-0">
+                                        <input [style.cursor]="selectedPlanName == 'InStudying'?'pointer':'default'"
+                                            [attr.readonly]="selectedPlanName == 'InStudying'" [value]="dic.Title"
+                                            class="rounded-0 border-0 border-end form-control">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2" style="background-color:rgb(230 230 230);"></td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <button type="submit" class="m-1 btn btn-success"
+                            [disabled]="formSubmitted || !this.dictionariesCard.length"
+                            [class.btn-secondary]="formSubmitted || !dictionariesCard.length">
+                            Начать повторение
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col"></div>
+</div>
+
+<style>
+    input:focus,
+    select:focus {
+        box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.5),
+            0px 2px 4px rgba(0, 0, 0, 0.1),
+            0px 4px 8px rgba(0, 0, 0, 0.1),
+            0px 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-tab.active+label {
+        background: green;
+        color: white;
+    }
+</style>

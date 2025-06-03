@@ -1,4 +1,4 @@
-export class GenerateTextContext{
+export class GenerateTextQuery{
     constructor(
         public Prompt?: string
     ){}

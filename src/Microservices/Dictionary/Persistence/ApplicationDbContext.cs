@@ -11,6 +11,9 @@ namespace Persistence
 
         public DbSet<Dictionary> Dictionaries { get; set; }
         public DbSet<DictionaryRow> Words { get; set; }
+        public DbSet<CardBox> CardBox { get; set; }
+        public DbSet<CardPlan> CardPlan { get; set; }
+        public DbSet<GeneratedTextHistory> GeneratedTextHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);

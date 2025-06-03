@@ -28,14 +28,15 @@ namespace Application.DictionaryRow.Commands.CreateWord
                 newGuid,
                 (Guid)request.DictionaryId!,
                 request.DictionaryRows[i].WordText,
-                LearnStatus.NotStudied,
-                DateTime.Now.ToUniversalTime(),
+                request.DictionaryRows[i].LearnStatus,
                 DateTime.Now.ToUniversalTime(),
                 request.DictionaryRows[i].WordTranslation,
-                request.DictionaryRows[i].WordContexts));
+                request.DictionaryRows[i].WordContexts,
+                null,
+                null));
             }
 
-            wordRepository.CreateRange(wordsForSave);
+            await wordRepository.CreateRangeAsync(wordsForSave);
 
             await unitOfWork.SaveChangesAsync();
             

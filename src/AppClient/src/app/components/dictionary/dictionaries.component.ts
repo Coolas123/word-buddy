@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core"
+import { Component } from "@angular/core"
 import { FormsModule, ReactiveFormsModule } from "@angular/forms"
 import { ActivatedRoute, Router } from "@angular/router"
 import { MessageService } from "../../models/alertMessage.models/alertMessage.service"
@@ -14,7 +14,6 @@ registerLocaleData(localeRu, 'ru');
     templateUrl: "./dictionaries.component.html",
     imports: [FormsModule, ReactiveFormsModule, RouterModule],
     styles: ['.ref1:hover .card{border-color: rgb(0 0 0);}'],
-    providers: []
 })
 
 export class DictionariesComponent {

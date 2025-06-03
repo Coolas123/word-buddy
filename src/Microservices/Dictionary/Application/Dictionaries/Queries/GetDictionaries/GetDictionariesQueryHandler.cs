@@ -13,7 +13,7 @@ namespace Application.Dictionaries.Queries.GetDictionaries
             this.dictionaryRepository = dictionaryRepository;
         }
         public async Task<Result<IEnumerable<Dictionary>>> Handle(GetDictionariesQuery request, CancellationToken cancellationToken) {
-            var dictionaries = dictionaryRepository.GetDictionariesByUserId(request.UserId);
+            var dictionaries = await dictionaryRepository.GetDictionariesByUserIdAsync(request.UserId);
             if (!dictionaries.Any()) {
                 return Result.Failure<IEnumerable<Dictionary>>(Domain.Errors.ApplicationError.Dictionary.DictionariesWasNotFound);
             }

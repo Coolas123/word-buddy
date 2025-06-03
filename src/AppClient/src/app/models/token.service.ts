@@ -2,6 +2,7 @@ import { isPlatformBrowser } from "@angular/common";
 import { Inject, Injectable,PLATFORM_ID } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { LocalStorageService } from "./LocalStorageService";
+import { JwtHelperService } from "@auth0/angular-jwt"
 
 
 
@@ -9,17 +10,20 @@ import { LocalStorageService } from "./LocalStorageService";
     providedIn: 'root'
 })
 export class TokenService{
-    public isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+    private _isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
-    constructor(private localStorageService:LocalStorageService){
+    constructor(private localStorageService:LocalStorageService,private jwtHelper: JwtHelperService){
         const token = this.getToken()
-        if(token){
+        if(token)
             this.updateToken(true)
-        }
+    }
+
+    get isAuthenticated(){
+        return this._isAuthenticated
     }
 
     updateToken(status: boolean){
-        this.isAuthenticated.next(status)
+        this._isAuthenticated.next(status)
     }
 
     setToken(token: string){

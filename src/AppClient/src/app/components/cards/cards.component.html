@@ -1,0 +1,97 @@
+<div class="row" style="height:100vh;">
+    <div class="col align-self-center" style="height:80%">
+        <div class="p-2">
+            <p class="btn-outline-success">
+            <input class="btn-check" type="checkbox" id="helpInput" data-bs-toggle="collapse"
+                href="#helpCollapse" role="button" aria-expanded="false" aria-controls="helpCollapse">
+            <label class="btn btn-outline-secondary" for="helpInput">Скрыть подсказку</label>
+        </p>
+        <div class="collapse show" id="helpCollapse">
+            <p class="fs-5">Сочетания клавишь для смены статуса изученности:</p>
+            <div>
+                <div class="backButton mb-2 border border-2 border-black rounded-3" style="display: inline-block; width: 40px; height: 40px; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                <span class="p-2">Z</span>
+                </div>
+                <span class="m-3 fs-5">{{backButton.toString()}}</span>
+            </div>
+            <div>
+                <div class="stayButton mb-2 border border-2 border-black rounded-3" style="display: inline-block; width: 40px; height: 40px; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                <span class="p-2">X</span>
+                </div>
+                <span class="m-3 fs-5">Оставить</span>
+            </div>
+            <div>
+                <div class="nextButton mb-2 border border-2 border-black rounded-3" style="display: inline-block; width: 40px; height: 40px; box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.468);">
+                <span class="p-2">C</span>
+                </div>
+                <span class="m-3 fs-5">{{nextButton != learnStatus.None?nextButton.toString():"Ваш выбор"}}</span>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="col align-self-center" style="height:80%">
+        <div class="card text-center h-50 rounded-5">
+            <div class="card-body d-flex justify-content-center align-items-center" style="cursor:pointer;"
+                (click)="changeTranslationFlag()">
+                <!-- <span class="fs-1">{{showTranslation?this.currentRow?.WordTranslation:this.currentRow?.WordText}}</span> -->
+                @if(getDictionaryRowsCount()){
+                    <span class="fs-1">{{showTranslation? currentRow?.WordTranslation : currentRow?.WordText}}</span>
+                }
+                @else{
+                    <span class="fs-3">Слова закончились</span>
+                }
+            </div>
+            <div class="card-footer d-flex">
+                @if(cardBoxLearnStatus == 'NotStudied'){
+                <button type="button" class="btn backButton w-100 me-1"
+                    (click)="changeLearnStatus(currentRow!,learnStatus.NotStudied)">{{learnStatus.NotStudied}}</button>
+                <button type="button" class="btn stayButton w-100 me-1" (click)="nextRow()">Оставить</button>
+                <button type="button" class="btn nextButton w-100"
+                    (click)="changeLearnStatus(currentRow!,learnStatus.InStudying)">{{learnStatus.InStudying}}</button>
+                }
+                @else if(cardBoxLearnStatus == "InStudying"){
+                <button type="button" class="btn backButton w-100 me-1"
+                    (click)="changeLearnStatus(currentRow!,learnStatus.NotStudied)">{{learnStatus.NotStudied}}</button>
+                <button type="button" class="btn stayButton w-100 me-1" (click)="nextRow()">Оставить</button>
+                <button type="button" class="btn nextButton w-100"
+                    (click)="changeLearnStatus(currentRow!,learnStatus.NeedToRemember)">{{learnStatus.NeedToRemember}}</button>
+                }
+                @else if(cardBoxLearnStatus == "NeedToRemember"){
+                
+                    <button type="button" class="btn backButton w-100 me-1"
+                    (click)="changeLearnStatus(currentRow!,learnStatus.InStudying)">{{learnStatus.InStudying}}</button>
+                <button type="button" class="btn stayButton w-100 me-1" (click)="nextRow()">Оставить</button>
+                
+                    <select class="form-select w-100">
+                    @for(status of newLearnStatues;track status){
+                    <option (click)="changeLearnStatus(currentRow!,getLearnStatusByStringKey(status.key))">
+                        {{status.value}}</option>
+                    }
+                    <option value="0" selected disabled>Статус на ваш выбор</option>
+                </select>
+                
+                
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col"></div>
+</div>
+
+<style>
+    .btn:hover {
+        border-color: rgb(0 0 0);
+    }
+
+    .nextButton {
+        background-color: rgb(158, 224, 191);
+    }
+
+    .backButton {
+        background-color: rgb(255, 128, 128);
+    }
+
+    .stayButton {
+        background-color: rgb(191, 191, 191);
+    }
+</style>

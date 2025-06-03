@@ -1,10 +1,12 @@
 export enum LearnStatus
 {
-    None,
-    Studied,
-    InStudying,
-    NeedToRemember,
-    NotStudied,
-    VeryDifficult,
-    WillNotStudy
+    None = "Не выбрано",
+    Studied="Выучено",
+
+    InStudying="В изучении",
+    NeedToRemember="Нужно повторить",
+    NotStudied="Не выучено",
+    VeryDifficult="Очень сложно",
+    
+    WillNotStudy="Не буду учить"
 }

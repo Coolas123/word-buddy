@@ -42,6 +42,10 @@ namespace Persistence.Configurations
                 .HasColumnName("user_id");
 
             builder
+                .Property(x => x.CardPlanId)
+                .HasColumnName("card_plan_id");
+
+            builder
                 .HasMany(x => x.DictionaryRows)
                 .WithOne()
                 .HasForeignKey(x => x.DictionaryId);

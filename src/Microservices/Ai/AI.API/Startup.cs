@@ -2,12 +2,15 @@
 using Application.Hubs;
 using Application.SignalR.Models;
 using FluentValidation;
+using Infrastructure.MassTransit.ViewModels;
+using MassTransit.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -109,15 +112,15 @@ namespace AI.API
 
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
-            //var section = configuration.GetSection("RabbitServer");
-            //ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
-            //{
-            //    IsDegub = section.GetValue<bool>("IsDegub"),
-            //    ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
-            //    Configurator = bus => {
-            //        bus.AddRequestClient<DictionariesRequest>();
-            //    }
-            //});
+            var section = configuration.GetSection("RabbitServer");
+            ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
+            {
+                IsDegub = section.GetValue<bool>("IsDegub"),
+                ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
+                Configurator = bus => {
+                    bus.AddRequestClient<SaveWordContextRequest>();
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

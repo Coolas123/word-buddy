@@ -21,4 +21,7 @@
 			<_Parameter1>User.Api.UnitTests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Subscriptions\Queries\" />
+	</ItemGroup>
 </Project>

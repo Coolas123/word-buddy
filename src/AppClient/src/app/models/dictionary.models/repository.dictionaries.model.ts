@@ -7,6 +7,7 @@ import { ReplaySubject } from "rxjs"
 import { HttpErrorResponse } from "@angular/common/http"
 import { MessageService } from "../alertMessage.models/alertMessage.service"
 import { Message } from "../alertMessage.models/message.model"
+import { CreateDictionaryAndRowsCommand } from "../createDictionary.models/createDictionary.model"
 
 @Injectable({
     providedIn: 'root'
@@ -15,9 +16,11 @@ export class Model {
     dictionaries: Dictionary[] = []
     private replaySubject: ReplaySubject<Dictionary[]>;
 
-    constructor(public dataSource: RestDataSource<Dictionary[]>, private messageService: MessageService) {
+    constructor(public dataSource: RestDataSource<any>, private messageService: MessageService) {
         this.replaySubject = new ReplaySubject<Dictionary[]>(1)
+    }
 
+    loadDIctionaries(){
         this.dataSource.getData(UserURLs.dictionariesURI()).subscribe(
             {
             next: (dictionaries) => {
@@ -41,5 +44,9 @@ export class Model {
             subject.next(dictionaries)
         })
         return subject
+    }
+
+    public saveDictionary(newDictionary: CreateDictionaryAndRowsCommand): Observable<any> {
+        return this.dataSource.saveData(UserURLs.createDictionaryURI(),newDictionary)
     }
 }

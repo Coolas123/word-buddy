@@ -4,6 +4,7 @@ import { UserURLs } from "../../common/gateways"
 import { Observable } from "rxjs/internal/Observable"
 import { UpdateDictionaryAndRowsCommand } from "./getDictionary.model"
 import { ReplaySubject } from "rxjs"
+import { MoveToAnotherDicitonaryRowsCommand, MoveToAnotherDictionary } from "./moveToAnotherDictionary.model"
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +14,7 @@ export class Model {
     public dictionaryIdSubject: ReplaySubject<string>
     private replaySubject: ReplaySubject<UpdateDictionaryAndRowsCommand>
 
-    constructor(public dataSource: RestDataSource<UpdateDictionaryAndRowsCommand>) {
+    constructor(public dataSource: RestDataSource<UpdateDictionaryAndRowsCommand>,public dataSource1: RestDataSource<MoveToAnotherDicitonaryRowsCommand>) {
         this.replaySubject = new ReplaySubject<UpdateDictionaryAndRowsCommand>(1)
         this.dictionaryIdSubject = new ReplaySubject<string>(1)
 
@@ -27,6 +28,10 @@ export class Model {
 
     public updateDictionary(newDictionary: any): Observable<any> {
         return this.dataSource.updateData(UserURLs.updateDictionaryURI(), newDictionary)
+    }
+
+    public moveToAnotherDictionaryDictionary(moveToAnotherDictionary: MoveToAnotherDicitonaryRowsCommand): Observable<any> {
+        return this.dataSource1.updateData(UserURLs.moveToAnotherDicitonary(), moveToAnotherDictionary)
     }
 
     public getDictionaryObservable() {

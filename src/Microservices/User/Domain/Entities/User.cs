@@ -1,6 +1,4 @@
-﻿using Domain.EntityServices;
-using Domain.Enums;
-using Domain.Errors;
+﻿using Domain.Enums;
 using Domain.Primitives;
 using Domain.Shared;
 using System.Security.Claims;
@@ -15,6 +13,7 @@ namespace Domain.Entities
         public SystemRole SystemRole { get; private set; }
         public UserRole UserRole { get; private set; }
         public string HashPassword { get; private set; }
+        public Subscription Subscription { get; private set; }
 
         private User(Guid id,
             string userName,

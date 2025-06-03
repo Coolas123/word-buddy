@@ -1,7 +1,7 @@
 ﻿using Application;
 using Domain.Repositories;
 using FluentValidation;
-using Infrastructure.MassTransit.Dictionary;
+using Infrastructure.MassTransit.ViewModels;
 using MassTransit.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -104,6 +104,9 @@ namespace Dictionary.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IDictionaryRepository, DictionaryRepository>();
             services.AddScoped<IDictionaryRowRepository, DictionaryRowRepository>();
+            services.AddScoped<ICardPlanRepository, CardPlanRepository>();
+            services.AddScoped<ICardBoxRepository, CardBoxRepository>();
+            services.AddScoped<IGeneratedTextHistoryRepository, GeneratedTextHistoryRepository>();
 
             var section = configuration.GetSection("RabbitServer");
             ConfigureServiceMassTransit.ConfigureServices(services, configuration, new MassTransitConfiguration
@@ -111,7 +114,7 @@ namespace Dictionary.API
                 IsDegub = section.GetValue<bool>("IsDegub"),
                 ServiceName = AssemblyName.GetAssemblyName(Assembly.GetExecutingAssembly().Location).Name,
                 Configurator = bus => {
-                    bus.AddConsumer<DictionariesConsumer>();
+                    bus.AddConsumer<SaveWordContextConsumer>();
                 }
             });
         }
